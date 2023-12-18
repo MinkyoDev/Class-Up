@@ -1,0 +1,8 @@
+# Security
+Backend/secrets.json
+
+# Data
+Backend/static/profile_image/user_image/
+
+# Etc
+__pycache__/
