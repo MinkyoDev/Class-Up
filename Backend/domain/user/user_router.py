@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
+from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, Form
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
@@ -62,18 +62,17 @@ def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_
              description="로그인 입니다.", 
              response_model=user_schema.Token, 
              tags=["User"])
-def login_for_access_token(form_data: user_schema.LoginFormData = Depends(),
-                           db: Session = Depends(get_db)):
+def login_for_access_token_n(user_id: str = Form(...), password: str = Form(...),
+                             db: Session = Depends(get_db)):
 
-    user = user_crud.get_user(db, form_data.user_id)
-    if not user or not pwd_context.verify(form_data.password, user.password):
+    user = user_crud.get_user(db, user_id)
+    if not user or not pwd_context.verify(password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect user ID or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # make access token
     data = {
         "sub": user.user_id,
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
