@@ -15,6 +15,7 @@ class User(Base):
     profile_image = Column(String(255), unique=False, nullable=False)
     state = Column(Boolean, nullable=False)
     attendance_type = Column(Boolean, nullable=False)
+    admin = Column(Boolean, nullable=False)
     use = Column(Boolean, nullable=False)
 
 

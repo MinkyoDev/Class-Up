@@ -21,10 +21,6 @@ def get_user_attendance_list(db: Session, user_id: str):
 
 
 def get_today_user_attendance_list(db: Session, user_id: str):
-    return db.query(Attendance).filter(Attendance.user_id == user_id).order_by(Attendance.id).all()
-
-
-def get_today_user_attendance_list(db: Session, user_id: str):
     today = datetime.now().date()
 
     return db.query(Attendance)\
@@ -33,11 +29,24 @@ def get_today_user_attendance_list(db: Session, user_id: str):
              .order_by(Attendance.id)\
              .all()
 
+
 def attendance_check(db: Session, check_attendance: UserCreate, state: str):
-    db_attendance = Attendance(user_id=check_attendance.user_id,
-                         time=datetime.now(),
-                         state=state)
-    db.add(db_attendance)
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    db_attendance = db.query(Attendance).filter(
+        Attendance.user_id == check_attendance.user_id,
+        Attendance.time.between(today_start, today_end)
+    ).first()
+
+    if db_attendance:
+        db_attendance.time = datetime.now()
+        db_attendance.state = state
+    else:
+        new_attendance = Attendance(user_id=check_attendance.user_id,
+                                    time=datetime.now(),
+                                    state=state)
+        db.add(new_attendance)
     db.commit()
 
 
@@ -52,7 +61,8 @@ def get_attendance_count(db: Session, user_id: str, target_date: date):
     attendance_count = db.query(Attendance).filter(
         Attendance.user_id == user_id,
         Attendance.time >= day_start,
-        Attendance.time <= day_end
+        Attendance.time <= day_end,
+        Attendance.state != "absent"
     ).count()
     
     return attendance_count

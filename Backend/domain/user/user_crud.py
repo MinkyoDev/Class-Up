@@ -13,9 +13,10 @@ def create_user(db: Session, user_create: UserCreate):
                    email=user_create.email,
                    phone_number=user_create.phone_number,
                    profile_image = 'static/profile_image/default.png',
-                   use=True,
                    state=True,
-                   attendance_type=True)
+                   attendance_type=True,
+                   admin=False,
+                   use=True)
     db.add(db_user)
     db.commit()
 
