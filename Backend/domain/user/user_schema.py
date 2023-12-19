@@ -35,6 +35,9 @@ class UserCreate(BaseModel):
 class UserState(BaseModel):
     user_id: str
     user_name: str
+    email : str
+    phone_number : str
+    profile_image : str
     state: bool
 
 

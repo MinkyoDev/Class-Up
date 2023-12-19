@@ -64,6 +64,16 @@ def get_user_attendance(db: Session = Depends(get_db),
     return user_attendance_list
 
 
+@router.get("/today_user_attendance/{username}", 
+            description="해당 유저의 오늘 출석 기록을 조회합니다.", 
+            response_model=list[attendance_schema.Attendance], 
+            tags=["Attendance"])
+def get_user_attendance(db: Session = Depends(get_db),
+                        current_user: User = Depends(get_current_user)):
+    user_attendance_list = attendance_crud.get_today_user_attendance_list(db, current_user.user_id)
+    return user_attendance_list
+
+
 @router.get("/attendance_stats/{username}", 
             description="해당 유저의 출석(present), 지각(late), 결석(absent) 횟수와 벌금을 계산합니다.", 
             tags=["Attendance"])

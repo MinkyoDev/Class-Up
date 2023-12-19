@@ -20,6 +20,19 @@ def get_user_attendance_list(db: Session, user_id: str):
     return db.query(Attendance).filter(Attendance.user_id == user_id).order_by(Attendance.id).all()
 
 
+def get_today_user_attendance_list(db: Session, user_id: str):
+    return db.query(Attendance).filter(Attendance.user_id == user_id).order_by(Attendance.id).all()
+
+
+def get_today_user_attendance_list(db: Session, user_id: str):
+    today = datetime.now().date()
+
+    return db.query(Attendance)\
+             .filter(Attendance.user_id == user_id)\
+             .filter(func.date(Attendance.time) == today)\
+             .order_by(Attendance.id)\
+             .all()
+
 def attendance_check(db: Session, check_attendance: UserCreate, state: str):
     db_attendance = Attendance(user_id=check_attendance.user_id,
                          time=datetime.now(),
