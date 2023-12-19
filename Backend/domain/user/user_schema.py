@@ -69,6 +69,7 @@ class Token(BaseModel):
     token_type: str
     user_id: str
     user_name: str
+    profile_image : str
 
 
 class LoginFormData(BaseModel):
