@@ -90,7 +90,8 @@ def login_for_access_token_n(user_id: str = Form(...), password: str = Form(...)
         "token_type": "bearer",
         "user_id": user.user_id,
         "user_name": user.user_name,
-        "profile_image": user.profile_image
+        "profile_image": user.profile_image,
+        "admin": user.admin
     }
 
 
@@ -128,7 +129,8 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
         "token_type": "bearer",
         "user_id": user.user_id,
         "user_name": user.user_name,
-        "profile_image": user.profile_image
+        "profile_image": user.profile_image,
+        "admin": user.admin
     }
 
 

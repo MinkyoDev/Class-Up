@@ -70,6 +70,7 @@ class Token(BaseModel):
     user_id: str
     user_name: str
     profile_image : str
+    admin : bool
 
 
 class LoginFormData(BaseModel):
