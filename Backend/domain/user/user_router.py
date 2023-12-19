@@ -72,6 +72,12 @@ def login_for_access_token_n(user_id: str = Form(...), password: str = Form(...)
             detail="Incorrect user ID or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if not user.use:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is not active",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     data = {
         "sub": user.user_id,
@@ -100,6 +106,12 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not user.use:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is not active",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

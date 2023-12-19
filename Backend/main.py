@@ -4,8 +4,11 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from lib.schedulers import add_attendance_to_db
 from domain.user import user_router
 from domain.attendance import attendance_router
+from domain.admin import admin_router
 
 
 description = """
@@ -25,6 +28,10 @@ tags_metadata = [
         "name": "Attendance",
         "description": "출석 관리를 위한 API입니다.",
     },
+    {
+        "name": "Admin",
+        "description": "관리자를 위한 API입니다.",
+    },
 ]
 
 app = FastAPI(
@@ -34,7 +41,7 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
-# CORS 미들웨어 추가
+# Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # 모든 오리진 허용
@@ -43,13 +50,21 @@ app.add_middleware(
     allow_headers=["*"],  # 모든 HTTP 헤더 허용
 )
 
+# Make Static directory
 STATIC_DIR = "static/profile_image"
 os.makedirs(STATIC_DIR, exist_ok=True)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Scheduler
+scheduler = BackgroundScheduler()
+scheduler.add_job(add_attendance_to_db, 'cron', hour=15, minute=16)
+scheduler.start()
+
+# Router
 app.include_router(user_router.router)
 app.include_router(attendance_router.router)
+app.include_router(admin_router.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7783)
