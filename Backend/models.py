@@ -13,6 +13,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     phone_number = Column(String(255), unique=True, nullable=False)
     profile_image = Column(String(255), unique=False, nullable=False)
+    employment = Column(Boolean, nullable=False)
     state = Column(Boolean, nullable=False)
     attendance_type = Column(Boolean, nullable=False)
     admin = Column(Boolean, nullable=False)
