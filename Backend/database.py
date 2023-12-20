@@ -1,16 +1,19 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import json, os
-
+import os
+from dotenv import load_dotenv
 
 from models import User, Attendance, Base
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SECRET_FILE = os.path.join(BASE_DIR, 'secrets.json')
-secrets = json.loads(open(SECRET_FILE).read())
-DB = secrets["DB"]
+load_dotenv()
 
-DB_URL = f"mysql+pymysql://{DB['user']}:{DB['password']}@{DB['host']}:{DB['port']}/{DB['database']}?charset-utf8"
+DB_USER = os.getenv('MYSQL_USER')
+DB_PASSWORD = os.getenv('MYSQL_PASSWORD')
+DB_HOST = os.getenv('MYSQL_HOST')
+DB_PORT = os.getenv('MYSQL_PORT')
+DATABASE = os.getenv('MYSQL_DATABASE')
+
+DB_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DATABASE}?charset-utf8"
 
 engine = create_engine(DB_URL)
 

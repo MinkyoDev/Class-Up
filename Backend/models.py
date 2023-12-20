@@ -37,7 +37,7 @@ class UserSchedules(Base):
     schedule_id = Column(Integer, primary_key=True)
     user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
     title = Column(String(255), nullable=False)
-    description = Column(String(255), nullable=False)
+    content = Column(String(255), nullable=False)
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime, nullable=False)
     created_at = Column(DateTime, nullable=False)
