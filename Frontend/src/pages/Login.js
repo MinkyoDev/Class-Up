@@ -16,7 +16,7 @@ const Login = () => {
     const navigate = useNavigate();
     const { setUserInfo } = useUserContext();
     const [credentials, setCredentials] = useState({
-        username: '',
+        user_id: '',
         password: ''
     });
 
@@ -28,6 +28,10 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await loginUser(credentials);
+
+      // userStatus 추가
+      const userStatus = response.userStatus; // API 응답에 따라 조정 필요
+
       localStorage.setItem('userInfo', JSON.stringify(response)); // 토큰 저장
       setUserInfo(response);
       navigate('/');
@@ -43,9 +47,10 @@ const Login = () => {
 
   return (
     <div className="container mt-5">
+      <h1>로그인</h1>
       <form onSubmit={handleSubmit} >
-      <MDBInput className='mb-4' type='text' name='username' 
-      value={credentials.username}
+      <MDBInput className='mb-4' type='text' name='user_id' 
+      value={credentials.user_id}
       onChange={handleChange}
       label='ID' />
       <MDBInput className='mb-4' type='password' name='password' 

@@ -9,3 +9,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+nav {
+  background-color: #e9f4ff;
+  padding: 1rem;
+  margin-top: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav h1 {
+  margin: 0;
+  color: #007bff;
+}
+
+.menu-links {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column; /* 세로 방향 정렬 */
+}
+
+.menu-links li {
+  margin-top: 10px;
+}
+
+.menu-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.menu-links li a:hover {
+  color: #007bff;
+}

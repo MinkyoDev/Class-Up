@@ -1,6 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../contexts/UserContext';
+import {
+  MDBInput,
+  MDBCol,
+  MDBRow,
+  MDBCheckbox,
+  MDBBtn,
+  MDBIcon
+} from 'mdb-react-ui-kit';
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -12,8 +20,15 @@ const Logout = () => {
     navigate('/login'); // 로그인 페이지로 리디렉션
   };
 
+  const handleUpdate = () => {
+    navigate('/userUpdate'); // 로그인 페이지로 리디렉션
+  };
+
   return (
-    <button onClick={handleLogout}>로그아웃</button>
+    <>
+    <MDBBtn onClick={handleUpdate} className='me-1' color='info'>정보수정</MDBBtn>
+    <MDBBtn onClick={handleLogout} className='me-1' color='danger'>로그아웃</MDBBtn>
+    </>
   );
 };
 

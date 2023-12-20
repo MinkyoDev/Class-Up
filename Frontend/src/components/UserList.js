@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { fetchUsers } from '../services/apiService';
 import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
 
+const serverURL = 'http://221.163.19.218:7783/'; // 서버 URL
+
 const UserList = () => {
   const [users, setUsers] = useState([]);
 
@@ -11,7 +13,7 @@ const UserList = () => {
         const data = await fetchUsers();
         setUsers(data);
       } catch (error) {
-        // 오류 처리
+        console.error('Error fetching users:', error);
       }
     };
 
@@ -23,44 +25,42 @@ const UserList = () => {
     <MDBTable align='middle'>
       <MDBTableHead>
         <tr>
-          <th scope='col'>Name</th>
-          <th scope='col'>Title</th>
-          <th scope='col'>Status</th>
-          <th scope='col'>Position</th>
-          <th scope='col'>Actions</th>
+          <th scope='col'>프로필</th>
+          <th scope='col'>이름</th>
+          <th scope='col'>상태</th>
+          <th scope='col'>이메일</th>
+          <th scope='col'>전화번호</th>
         </tr>
       </MDBTableHead>
       <MDBTableBody>
-        {users.map((user) => (
-          <tr key={user.id}>
+        {users.map((users) => (
+          <tr key={users.user_id}>
             <td>
-              <div className='d-flex align-items-center'>
-                {/* 이미지 URL이 있다면 아래와 같이 사용할 수 있습니다. */}
-                {/* <img
-                  src={user.imageURL}
-                  alt={user.username}
+                <img
+                  src={users.profile_image ? serverURL + users.profile_image : users.profile_image}
+                  alt={users.user_name}
                   style={{ width: '45px', height: '45px' }}
                   className='rounded-circle'
-                /> */}
-                <div className='ms-3'>
-                  <p className='fw-bold mb-1'>{user.username}</p>
-                  <p className='text-muted mb-0'>{user.email}</p>
+                />
+            </td>
+            <td>
+              <div className='d-flex align-items-center'>
+                <div className='ms-0'>
+                  <p className='fw-bold mb-1'>{users.user_name}</p>
+                  <p className='text-muted mb-0'>{users.user_id}</p>
                 </div>
               </div>
             </td>
             <td>
-              <p className='fw-normal mb-1'>{user.id}</p>
+            <MDBBadge color={users.state ? 'success' : 'warning'} pill>
+                  {users.state ? '출근' : '자택'}
+                </MDBBadge>
             </td>
             <td>
-              <MDBBadge color='success' pill>
-                {user.email}
-              </MDBBadge>
+            <p className='fw-normal mb-1'>{users.email}</p>
             </td>
-            <td>{user.phone}</td>
             <td>
-              <MDBBtn color='link' rounded size='sm'>
-                Edit
-              </MDBBtn>
+              {users.phone_number.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
             </td>
           </tr>
         ))}
