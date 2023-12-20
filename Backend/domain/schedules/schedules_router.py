@@ -73,6 +73,7 @@ def update_schedule(schedule_id: int,
 
 
 @router.delete("/schedules/{schedule_id}", 
+               description="스케줄을 삭제합니다.", 
                status_code=status.HTTP_204_NO_CONTENT, 
                tags=["Schedules"])
 def delete_schedule(schedule_id: int, 
