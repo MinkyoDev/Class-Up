@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -37,10 +37,27 @@ class UserSchedules(Base):
     schedule_id = Column(Integer, primary_key=True)
     user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
     title = Column(String(255), nullable=False)
-    content = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
 
     user = relationship("User", foreign_keys=[user_id])
+
+
+class FreeBoard(Base):
+    __tablename__ = "free_board"
+
+    post_id = Column(Integer, primary_key=True)
+    user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
+    image_url = Column(String(255), unique=False, nullable=True)
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+
+    user = relationship("User", foreign_keys=[user_id])
+
+    def __repr__(self):
+        return f"<FreeBoard(post_id={self.post_id}, title={self.title}, image_url={self.image_url})>"
