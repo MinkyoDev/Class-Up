@@ -10,6 +10,7 @@ from lib.schedulers import schedulers
 from domain.user import user_router
 from domain.attendance import attendance_router
 from domain.admin import admin_router
+from domain.schedules import schedules_router
 
 
 description = """
@@ -28,6 +29,10 @@ tags_metadata = [
     {
         "name": "Attendance",
         "description": "출석 관리를 위한 API입니다.",
+    },
+    {
+        "name": "Schedules",
+        "description": "스케줄 관리를 위한 API입니다.",
     },
     {
         "name": "Admin",
@@ -66,6 +71,7 @@ scheduler.start()
 app.include_router(user_router.router)
 app.include_router(attendance_router.router)
 app.include_router(admin_router.router)
+app.include_router(schedules_router.router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7783)
