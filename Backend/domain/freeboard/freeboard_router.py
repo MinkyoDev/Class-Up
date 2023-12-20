@@ -27,7 +27,7 @@ def create_freeboard_post(post: freeboard_schema.FreeBoardCreate,
 @router.get("/freeboard/user/{user_id}", 
             description="해당 유저의 게시글만 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
-            tags=["FreeBoard"])
+            tags=["Freeboard"])
 def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
     return freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=user_id)
 
@@ -35,7 +35,7 @@ def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
 @router.get("/freeboard/all", 
             description="모든 게시글을 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
-            tags=["FreeBoard"])
+            tags=["Freeboard"])
 def read_all_freeboard_posts(db: Session = Depends(get_db)):
     return freeboard_crud.get_all_freeboard_posts(db=db)
 
@@ -43,7 +43,7 @@ def read_all_freeboard_posts(db: Session = Depends(get_db)):
 @router.get("/freeboard/my_posts", 
             description="현제 로그인 되어있는 유저의 게시글만 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
-            tags=["FreeBoard"])
+            tags=["Freeboard"])
 def read_my_freeboard_posts(db: Session = Depends(get_db), 
                             current_user: User = Depends(get_current_user)):
     return freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=current_user.user_id)
@@ -52,7 +52,7 @@ def read_my_freeboard_posts(db: Session = Depends(get_db),
 @router.put("/freeboard/{post_id}", 
             description="게시글의 내용을 수정합니다.", 
             response_model=freeboard_schema.FreeBoardDisplay, 
-            tags=["FreeBoard"])
+            tags=["Freeboard"])
 def update_freeboard_post(post_id: int, 
                           post: freeboard_schema.FreeBoardCreate, 
                           db: Session = Depends(get_db), 
@@ -69,7 +69,7 @@ def update_freeboard_post(post_id: int,
 @router.delete("/freeboard/{post_id}", 
                description="게시글을 삭제합니다.", 
                status_code=status.HTTP_204_NO_CONTENT, 
-               tags=["FreeBoard"])
+               tags=["Freeboard"])
 def delete_freeboard_post(post_id: int, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
