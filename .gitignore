@@ -1,8 +1,13 @@
 # Security
 Backend/secrets.json
+.env
 
 # Data
 Backend/static/profile_image/user_image/
 
 # Etc
 __pycache__/
+
+# File
+*.sql
+*.env

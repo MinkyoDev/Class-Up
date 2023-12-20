@@ -10,5 +10,8 @@ END_DAY = 0
 LATE_FINE = 2000
 ABSENT_FINE = 5000
 
+# schedules_router.py
+SCHEDULE_REGISTRATION_CUTOFF_HOUR = "20:00"
+
 # schedulers.py
 MYSQLDUMP = "C:/Program Files/MySQL/MySQL Server 8.0/bin"

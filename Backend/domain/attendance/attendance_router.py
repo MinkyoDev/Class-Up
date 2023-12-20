@@ -7,7 +7,6 @@ import holidays
 from database import get_db
 from domain.attendance import attendance_crud, attendance_schema
 from domain.user.user_router import get_current_user
-
 from models import User
 
 import lib.const as const
