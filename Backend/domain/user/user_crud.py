@@ -13,6 +13,7 @@ def create_user(db: Session, user_create: UserCreate):
                    email=user_create.email,
                    phone_number=user_create.phone_number,
                    profile_image = 'static/profile_image/default.png',
+                   employment = False,
                    state=True,
                    attendance_type=True,
                    admin=False,
