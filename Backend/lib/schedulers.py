@@ -1,8 +1,9 @@
 from datetime import datetime
 from dotenv import load_dotenv
-import os
-import subprocess
 from pathlib import Path
+import subprocess
+import holidays
+import os
 
 from database import get_db 
 from models import Attendance, User
@@ -14,23 +15,40 @@ db_user = os.getenv('MYSQL_USER')
 db_password = os.getenv('MYSQL_PASSWORD')
 db_name = os.getenv('MYSQL_DATABASE')
 
+
 def add_attendance_to_db():
     print("Add today's attendance")
     db = next(get_db())
     try:
+        today = datetime.now()
+        today_midnight = today.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        if today.weekday() in [5, 6]:
+            print("주말에는 출석 기록을 추가하지 않습니다.")
+            return
+        kr_holidays = holidays.KR()
+        if today.date() in kr_holidays:
+            print("공휴일에는 출석 기록을 추가하지 않습니다.")
+            return
+
         all_users = db.query(User).all()
-        today_midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
         for user in all_users:
-            new_record = Attendance(user_id=user.user_id,
-                                    time=today_midnight,
-                                    state="absent")
-            db.add(new_record)
+            existing_record = db.query(Attendance).filter(
+                Attendance.user_id == user.user_id,
+                Attendance.time == today_midnight
+            ).first()
+            if not existing_record:
+                new_record = Attendance(user_id=user.user_id,
+                                        time=today_midnight,
+                                        state="absent")
+                db.add(new_record)
 
         db.commit()
 
     finally:
         db.close()
+
 
 def backup_database():
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from sqlalchemy.orm import Session
 from starlette import status
 from datetime import date, datetime
+import holidays
 
 from database import get_db
 from domain.attendance import attendance_crud, attendance_schema
@@ -22,6 +23,14 @@ router = APIRouter(
             tags=["Attendance"])
 def check_attendance(db: Session = Depends(get_db), 
                      current_user: User = Depends(get_current_user)):
+    today = date.today()
+    weekday = today.weekday()
+    if weekday == 5 or weekday == 6:
+        raise HTTPException(status_code=400, detail="주말에는 출석을 할 수 없습니다.")
+
+    kr_holidays = holidays.KR()
+    if today in kr_holidays:
+        raise HTTPException(status_code=400, detail="공휴일에는 출석을 할 수 없습니다.")
     
     check_present_time = attendance_crud.caculate_attendance_time(const.PRESENT_START, const.PRESENT_END)
     check_late_time = attendance_crud.caculate_attendance_time(const.PRESENT_END, const.LATE_END)
