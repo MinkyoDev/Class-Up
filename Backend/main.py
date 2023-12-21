@@ -15,11 +15,15 @@ from domain.freeboard import freeboard_router
 
 
 description = """
+**Class Up은 스터디의 출석 관리를 위한 웹페이지 입니다.**
+
 기능 목록:
 
-* **Say Hello** (_completely implemented_).
-* **Conversation with User** (_not implemented_).
-* **Conversation between Npcs** (_not implemented_).
+* **User** (_completely implemented_).
+* **Attendance** (_not implemented_).
+* **Schedules** (_not implemented_).
+* **Freeboard** (_not implemented_).
+* **Admin** (_not implemented_).
 """
 
 tags_metadata = [
@@ -47,7 +51,7 @@ tags_metadata = [
 
 app = FastAPI(
     title="Class Up",
-    # description=description,
+    description=description,
     version="0.0.1",
     openapi_tags=tags_metadata
 )

@@ -40,7 +40,20 @@ def create_schedule(schedule: schedules_schema.ScheduleCreate,
             tags=["Schedules"])
 def read_user_schedules(db: Session = Depends(get_db), 
                         current_user: User = Depends(get_current_user)):
-    return schedules_crud.get_user_schedules(db=db, user_id=current_user.user_id)
+    schedules = schedules_crud.get_user_schedules(db=db, user_id=current_user.user_id)
+    return [
+        {
+            "schedule_id": schedule.schedule_id,
+            "user_id": user_id,
+            "user_name": user_name,
+            "title": schedule.title,
+            "content": schedule.content,
+            "start_date": schedule.start_date,
+            "end_date": schedule.end_date,
+            "created_at": schedule.created_at,
+            "updated_at": schedule.updated_at
+        } for schedule, user_id, user_name in schedules
+    ]
 
 
 @router.get("/read_all_schedules/", 
@@ -49,7 +62,20 @@ def read_user_schedules(db: Session = Depends(get_db),
             tags=["Schedules"])
 def read_all_schedules(db: Session = Depends(get_db),
                        current_user: User = Depends(get_current_user)):
-    return schedules_crud.get_all_schedules(db=db)
+    schedules = schedules_crud.get_all_schedules(db=db)
+    return [
+        {
+            "schedule_id": schedule.schedule_id,
+            "user_id": user_id,
+            "user_name": user_name,
+            "title": schedule.title,
+            "content": schedule.content,
+            "start_date": schedule.start_date,
+            "end_date": schedule.end_date,
+            "created_at": schedule.created_at,
+            "updated_at": schedule.updated_at
+        } for schedule, user_id, user_name in schedules
+    ]
 
 
 @router.put("/schedules/{schedule_id}", 

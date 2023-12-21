@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -38,8 +38,8 @@ class UserSchedules(Base):
     user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
-    start_datetime = Column(DateTime, nullable=False)
-    end_datetime = Column(DateTime, nullable=False)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
 
@@ -61,3 +61,20 @@ class FreeBoard(Base):
 
     def __repr__(self):
         return f"<FreeBoard(post_id={self.post_id}, title={self.title}, image_url={self.image_url})>"
+    
+
+class FBComment(Base):
+    __tablename__ = "fb_comment"
+
+    comment_id = Column(Integer, primary_key=True)
+    post_id = Column(Integer, ForeignKey('free_board.post_id'), nullable=False)
+    user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+
+    user = relationship("User", foreign_keys=[user_id])
+    post = relationship("FreeBoard", foreign_keys=[post_id])
+
+    def __repr__(self):
+        return f"<Comment(comment_id={self.comment_id}, post_id={self.post_id}, user_id={self.user_id})>"

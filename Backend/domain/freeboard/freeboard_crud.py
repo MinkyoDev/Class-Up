@@ -13,11 +13,7 @@ def create_freeboard_post(db: Session, post: FreeBoardCreate, user_id: str):
 
 
 def get_freeboard_posts_by_user(db: Session, user_id: str):
-    return db.query(FreeBoard).filter(FreeBoard.user_id == user_id).all()
-
-
-# def get_all_freeboard_posts(db: Session):
-#     return db.query(FreeBoard).all()
+    return db.query(FreeBoard, User.user_name).join(User, FreeBoard.user_id == User.user_id).filter(FreeBoard.user_id == user_id).all()
 
     
 def get_all_freeboard_posts(db: Session):
