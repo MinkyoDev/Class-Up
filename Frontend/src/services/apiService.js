@@ -245,3 +245,153 @@ export const getAttendanceStats = async (username) => {
   }
 };
 
+// 모든 스케줄 조회 API
+export const fetchAllSchedules = async () => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get(`/api/schedules/read_all_schedules/`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Fetch All Schedules Error:', error);
+    throw error;
+  }
+};
+
+// 스케줄 생성 API
+export const createSchedule = async (scheduleData) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.post('/api/schedules/create_schedule', scheduleData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Create Schedule Error:', error);
+    throw error;
+  }
+};
+
+// 스케줄 수정 API
+export const updateSchedule = async (scheduleId, scheduleData) => {
+  try {
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.put(`/api/schedules/schedules/${scheduleId}`, scheduleData, {
+      headers: {
+        'Authorization': `Bearer ${token}`, // 여기서 yourAuthToken은 인증 토큰입니다.
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Update Schedule Error:', error);
+    throw error;
+  }
+};
+
+// 스케줄 삭제 API
+export const deleteSchedule = async (scheduleId) => {
+  try {
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    await axiosInstance.delete(`/api/schedules/schedules/${scheduleId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  } catch (error) {
+    console.error('Delete Schedule Error:', error);
+    throw error;
+  }
+};
+
+// 게시글 작성 API
+export const createFreeboardPost = async (postData) => {
+  try {
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.post('/api/freeboard/create_freeboard', postData, {
+      headers: {
+        'Authorization': `Bearer ${token}`, // 여기서 yourAuthToken은 인증 토큰입니다.
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Create Freeboard Post Error:', error);
+    throw error;
+  }
+};
+
+// 전체 게시글 조회 API
+export const fetchAllFreeboardPosts = async () => {
+  try {
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get('/api/freeboard/freeboard/all', {
+      headers: {
+        'Authorization': `Bearer ${token}`, // 여기서 yourAuthToken은 인증 토큰입니다.
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Fetch All Freeboard Posts Error:', error);
+    throw error;
+  }
+};
+
+

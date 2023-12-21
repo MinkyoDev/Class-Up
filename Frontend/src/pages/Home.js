@@ -42,12 +42,13 @@ const Home = () => {
             const result = await checkAttendance();
             console.log(result); // 성공 응답 로그
             // 출석체크 성공 시 추가 작업
+            alert('출석이 확인되었습니다.');
             setIsAttendanceButtonDisabled(true);
         } catch (error) {
             console.error('Attendance Check Failed:', error);
             // 서버에서 보낸 상세한 에러 메시지가 있는 경우 사용자에게 알림
             if (error.response && error.response.data && error.response.data.detail) {
-                alert(error.response.data.detail);
+                alert('출석에 실패했습니다.', error.response.data.detail);
             }
         }
     };

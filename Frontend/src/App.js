@@ -11,7 +11,9 @@ import Penalty from './pages/Penalty';
 import Project from './pages/Project';
 import Approval from './pages/Approval';
 import Study from './pages/Study';
+import FreeBoard from './pages/FreeBoard';
 import UserUpdate from './pages/UserUpdate';
+import CreatePost from './components/CreatePost';
 import UserList from './components/UserList';
 import AttendanceList from './components/AttendanceList';
 import PrivateRoute from './components/PrivateRoute';
@@ -34,6 +36,8 @@ function App() {
           <Route path="/project" element={<PrivateRoute><Project /></PrivateRoute>} />
           <Route path="/calendar" element={<PrivateRoute><Calendar /></PrivateRoute>} />
           <Route path="/userupdate" element={<PrivateRoute><UserUpdate /></PrivateRoute>} />
+          <Route path="/freeboard" element={<PrivateRoute><FreeBoard /></PrivateRoute>} />
+          <Route path="/createpost" element={<PrivateRoute><CreatePost /></PrivateRoute>} />
         </Routes>
       </Router>
     </UserProvider>

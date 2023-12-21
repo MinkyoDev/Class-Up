@@ -33,9 +33,9 @@ const Navbar = () => {
         <li><Link to="/">홈</Link></li>
         <li><Link to="/attendance">출석정보</Link></li>
         <li><Link to="/penalty">벌금표</Link></li>
-        <li><Link to="/approval">사유신청</Link></li>
+        <li><Link to="/freeboard">자유 게시판</Link></li>
         <li><Link to="/study">코테 스터디</Link></li>
-        <li><Link to="/Assignment">코테 챌린지</Link></li>
+        <li><Link to="/assignment">코테 챌린지</Link></li>
         <li><Link to="/project">프로젝트</Link></li>
         <li><Link to="/calendar">캘린더</Link></li>
       </ul>

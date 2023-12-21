@@ -31,9 +31,11 @@ const SignUp = () => {
     try {
       await createUser(userData);
       // 회원가입 성공 후 추가 작업(예: 알림, 페이지 이동 등)
+      alert('회원 가입이 완료되었습니다.');
       navigate('/login');
     } catch (error) {
       // 오류 처리
+      alert('회원 가입에 실패했습니다.');
     }
   };
 
