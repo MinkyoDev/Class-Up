@@ -32,12 +32,30 @@ def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
     return freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=user_id)
 
 
+# @router.get("/freeboard/all", 
+#             description="모든 게시글을 조회합니다.", 
+#             response_model=List[freeboard_schema.FreeBoardDisplay], 
+#             tags=["Freeboard"])
+# def read_all_freeboard_posts(db: Session = Depends(get_db)):
+#     return freeboard_crud.get_all_freeboard_posts(db=db)
+
+
 @router.get("/freeboard/all", 
             description="모든 게시글을 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
 def read_all_freeboard_posts(db: Session = Depends(get_db)):
-    return freeboard_crud.get_all_freeboard_posts(db=db)
+    posts = freeboard_crud.get_all_freeboard_posts(db=db)
+    return [{
+        "post_id": post.post_id, 
+        "user_id": post.user_id,  # user_id 필드 추가
+        "user_name": user_name, 
+        "title": post.title, 
+        "content": post.content, 
+        "image_url": post.image_url, 
+        "created_at": post.created_at, 
+        "updated_at": post.updated_at
+    } for post, user_name in posts]
 
 
 @router.get("/freeboard/my_posts", 
