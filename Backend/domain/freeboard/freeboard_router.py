@@ -29,15 +29,17 @@ def create_freeboard_post(post: freeboard_schema.FreeBoardCreate,
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
 def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
-    return freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=user_id)
-
-
-# @router.get("/freeboard/all", 
-#             description="모든 게시글을 조회합니다.", 
-#             response_model=List[freeboard_schema.FreeBoardDisplay], 
-#             tags=["Freeboard"])
-# def read_all_freeboard_posts(db: Session = Depends(get_db)):
-#     return freeboard_crud.get_all_freeboard_posts(db=db)
+    posts = freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=user_id)
+    return [{
+        "post_id": post.post_id, 
+        "user_id": post.user_id,
+        "user_name": user_name, 
+        "title": post.title, 
+        "content": post.content, 
+        "image_url": post.image_url, 
+        "created_at": post.created_at, 
+        "updated_at": post.updated_at
+    } for post, user_name in posts]
 
 
 @router.get("/freeboard/all", 
@@ -48,7 +50,7 @@ def read_all_freeboard_posts(db: Session = Depends(get_db)):
     posts = freeboard_crud.get_all_freeboard_posts(db=db)
     return [{
         "post_id": post.post_id, 
-        "user_id": post.user_id,  # user_id 필드 추가
+        "user_id": post.user_id,
         "user_name": user_name, 
         "title": post.title, 
         "content": post.content, 
@@ -65,6 +67,17 @@ def read_all_freeboard_posts(db: Session = Depends(get_db)):
 def read_my_freeboard_posts(db: Session = Depends(get_db), 
                             current_user: User = Depends(get_current_user)):
     return freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=current_user.user_id)
+
+
+@router.get("/freeboard/{post_id}", 
+            description="특정 게시글을 조회합니다.", 
+            response_model=freeboard_schema.FreeBoardDisplay, 
+            tags=["Freeboard"])
+def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
+    post = freeboard_crud.get_freeboard_post_by_id(db=db, post_id=post_id)
+    if post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    return post
 
 
 @router.put("/freeboard/{post_id}", 

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from domain.schedules.schedules_schema import ScheduleCreate
-from models import UserSchedules
+from models import User, UserSchedules
 
 
 def create_user_schedule(db: Session, schedule: ScheduleCreate, user_id: str):
@@ -10,8 +10,8 @@ def create_user_schedule(db: Session, schedule: ScheduleCreate, user_id: str):
         user_id=user_id,
         title=schedule.title,
         content=schedule.content,
-        start_datetime=schedule.start_datetime,
-        end_datetime=schedule.end_datetime,
+        start_date=schedule.start_date,
+        end_date=schedule.end_date,
         created_at=datetime.now(),
         updated_at=datetime.now()
     )
@@ -22,11 +22,11 @@ def create_user_schedule(db: Session, schedule: ScheduleCreate, user_id: str):
 
 
 def get_user_schedules(db: Session, user_id: str):
-    return db.query(UserSchedules).filter(UserSchedules.user_id == user_id).all()
+    return db.query(UserSchedules, User.user_id, User.user_name).join(User, UserSchedules.user_id == User.user_id).filter(UserSchedules.user_id == user_id).all()
 
 
 def get_all_schedules(db: Session):
-    return db.query(UserSchedules).all()
+    return db.query(UserSchedules, User.user_id, User.user_name).join(User, UserSchedules.user_id == User.user_id).all()
 
 
 def get_schedule_by_id(db: Session, schedule_id: int):
