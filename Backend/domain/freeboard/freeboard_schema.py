@@ -7,11 +7,15 @@ class FreeBoardCreate(BaseModel):
     content: str
     image_url: Optional[str] = None
 
-class FreeBoardDisplay(FreeBoardCreate):
+class FreeBoardDisplay(BaseModel):
     post_id: int
+    user_id: str
+    user_name: str
+    title: str
+    content: str
+    image_url: Optional[str]
     created_at: datetime
     updated_at: datetime
-    user_id: str
 
     class Config:
         from_attributes = True

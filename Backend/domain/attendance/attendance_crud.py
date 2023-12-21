@@ -98,7 +98,7 @@ def calculate_attendance_stats(db: Session, user_id: str):
 
     end_date = end_date + timedelta(days=1)
 
-    attendance_count = db.query(func.count()).filter(
+    present_count = db.query(func.count()).filter(
         Attendance.user_id == user_id,
         Attendance.time.between(start_date, end_date),
         Attendance.state == 'present'
@@ -110,17 +110,35 @@ def calculate_attendance_stats(db: Session, user_id: str):
         Attendance.state == 'late'
     ).scalar()
 
-    total_days = (end_date - start_date).days
-    absent_count = total_days - (attendance_count + late_count)
+    absent_count = db.query(func.count()).filter(
+        Attendance.user_id == user_id,
+        Attendance.time.between(start_date, end_date),
+        Attendance.state == 'absent'
+    ).scalar()
 
+    # total_days = (end_date - start_date).days
     total_fine = late_count*const.LATE_FINE + absent_count*const.ABSENT_FINE
 
     return {
-        "attendance_count": attendance_count,
+        "start_date": start_date,
+        "end_date": end_date,
+        "attendance_count": present_count,
         "late_count": late_count,
         "absent_count": absent_count,
         "total_fine": total_fine
     }
+
+
+def calculate_all_users_attendance_stats(db: Session):
+    users_stats = []
+    users = db.query(User).all()
+    for user in users:
+        stats = calculate_attendance_stats(db, user.user_id)
+        users_stats.append({**stats, "user_id": user.user_id})
+
+    sorted_stats = sorted(users_stats, key=lambda x: x['total_fine'], reverse=True)
+    return sorted_stats
+
 
 
 def get_daily_attendance_stats(db: Session, date: datetime.date):
