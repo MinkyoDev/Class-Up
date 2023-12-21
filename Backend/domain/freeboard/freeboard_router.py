@@ -15,7 +15,7 @@ router = APIRouter(
 
 @router.post("/create_freeboard", 
              description="자유 게시판에 글을 등록합니다.", 
-             response_model=freeboard_schema.FreeBoardDisplay, 
+             response_model=freeboard_schema.FreeBoardCreateReturn, 
              status_code=status.HTTP_201_CREATED,
              tags=["Freeboard"])
 def create_freeboard_post(post: freeboard_schema.FreeBoardCreate, 
@@ -66,7 +66,18 @@ def read_all_freeboard_posts(db: Session = Depends(get_db)):
             tags=["Freeboard"])
 def read_my_freeboard_posts(db: Session = Depends(get_db), 
                             current_user: User = Depends(get_current_user)):
-    return freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=current_user.user_id)
+    posts = freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=current_user.user_id)
+    return [{
+        "post_id": post.post_id, 
+        "user_id": post.user_id,
+        "user_name": user_name, 
+        "title": post.title, 
+        "content": post.content, 
+        "image_url": post.image_url, 
+        "created_at": post.created_at, 
+        "updated_at": post.updated_at
+    } for post, user_name in posts]
+
 
 
 @router.get("/freeboard/{post_id}", 
@@ -77,7 +88,17 @@ def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
     post = freeboard_crud.get_freeboard_post_by_id(db=db, post_id=post_id)
     if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    return post
+    print(post.post_id)
+    return {
+        "post_id": post.post_id, 
+        "user_id": post.user_id,
+        "user_name": post.user.user_name,
+        "title": post.title, 
+        "content": post.content, 
+        "image_url": post.image_url, 
+        "created_at": post.created_at, 
+        "updated_at": post.updated_at
+    }
 
 
 @router.put("/freeboard/{post_id}", 
