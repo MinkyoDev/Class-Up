@@ -85,3 +85,36 @@ def get_daily_attendance_stats(db: Session, date: datetime.date):
                                      "attendance_state": record.state})
 
     return attendance_stats
+
+
+def update_user_employment(db: Session, user_id: str, new_employment: bool):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        return None
+
+    user.employment = new_employment
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def update_user_state(db: Session, user_id: str, new_state: bool):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        return None
+
+    user.state = new_state
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def update_user_attendance_type(db: Session, user_id: str, new_attendance_type: bool):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        return None
+
+    user.attendance_type = new_attendance_type
+    db.commit()
+    db.refresh(user)
+    return user

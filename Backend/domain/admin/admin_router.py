@@ -56,3 +56,48 @@ def check_attendance(user_id: str = Query(...), db: Session = Depends(get_db),
     elif check_late_time:
         admin_crud.attendance_check(db=db, check_attendance=user_exists, state="late")
         return {"message" : "지각"}
+
+
+@router.put("/update_employment/{user_id}", 
+            response_model=admin_schema.UserSchema, 
+            tags=["Admin"])
+def update_user_employment_endpoint(user_id: str, 
+                                    new_employment: bool, 
+                                    db: Session = Depends(get_db),
+                                    current_user: User = Depends(get_current_user)):
+    updated_user = admin_crud.update_user_employment(db=db, user_id=user_id, new_employment=new_employment)
+
+    if updated_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return updated_user
+
+
+@router.put("/update_state/{user_id}", 
+            response_model=admin_schema.UserSchema, 
+            tags=["Admin"])
+def update_user_state_endpoint(user_id: str, 
+                               new_state: bool, 
+                               db: Session = Depends(get_db),
+                               current_user: User = Depends(get_current_user)):
+    updated_user = admin_crud.update_user_state(db=db, user_id=user_id, new_state=new_state)
+
+    if updated_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return updated_user
+
+
+@router.put("/update_attendance_type/{user_id}", 
+            response_model=admin_schema.UserSchema, 
+            tags=["Admin"])
+def update_user_attendance_type_endpoint(user_id: str, 
+                                         new_attendance_type: bool, 
+                                         db: Session = Depends(get_db),
+                                         current_user: User = Depends(get_current_user)):
+    updated_user = admin_crud.update_user_attendance_type(db=db, user_id=user_id, new_attendance_type=new_attendance_type)
+
+    if updated_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return updated_user

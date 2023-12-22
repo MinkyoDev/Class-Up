@@ -5,7 +5,7 @@ import uvicorn
 import os
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from lib.schedulers import schedulers
+from lib.schedulers import scheduled_task
 
 from domain.user import user_router
 from domain.attendance import attendance_router
@@ -78,7 +78,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Scheduler
 scheduler = BackgroundScheduler()
-scheduler.add_job(schedulers, 'cron', hour=21, minute=4)
+scheduler.add_job(scheduled_task, 'cron', hour=21, minute=4)
 scheduler.start()
 
 # Router

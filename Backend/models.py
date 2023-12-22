@@ -25,7 +25,7 @@ class Attendance(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
-    time = Column(DateTime, nullable=False)
+    time = Column(DateTime, nullable=True)
     state = Column(String(255), nullable=False)
 
     user = relationship("User", foreign_keys=[user_id]) 

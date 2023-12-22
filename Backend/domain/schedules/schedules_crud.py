@@ -18,6 +18,7 @@ def create_user_schedule(db: Session, schedule: ScheduleCreate, user_id: str):
     db.add(db_schedule)
     db.commit()
     db.refresh(db_schedule)
+    db_schedule.user_name = db_schedule.user.user_name
     return db_schedule
 
 

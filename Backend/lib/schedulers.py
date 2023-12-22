@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session
 from datetime import datetime
 from dotenv import load_dotenv
 from pathlib import Path
@@ -8,12 +9,27 @@ import os
 from database import get_db 
 from models import Attendance, User
 import lib.const as const
+from database import SessionLocal
 
 load_dotenv()
 
 db_user = os.getenv('MYSQL_USER')
 db_password = os.getenv('MYSQL_PASSWORD')
 db_name = os.getenv('MYSQL_DATABASE')
+
+
+def process_absent_users(db: Session):
+    today = datetime.today().date()
+
+    attended_users = db.query(Attendance.user_id).filter(Attendance.time >= today).all()
+    attended_user_ids = [user.user_id for user in attended_users]
+
+    absent_users = db.query(User).filter(User.user_id.notin_(attended_user_ids)).all()
+
+    for user in absent_users:
+        absence = Attendance(user_id=user.user_id, time=None, state="absent")
+        db.add(absence)
+    db.commit()
 
 
 def add_attendance_to_db():
@@ -68,7 +84,16 @@ def backup_database():
         print(f"Backup failed: {stderr}")
 
 
-def schedulers():
+# def schedulers():
+#     print("Scheduler Run!")
+#     add_attendance_to_db()
+#     backup_database()
+        
+
+def scheduled_task():
     print("Scheduler Run!")
-    add_attendance_to_db()
-    backup_database()
+    db = SessionLocal()
+    try:
+        process_absent_users(db)
+    finally:
+        db.close()
