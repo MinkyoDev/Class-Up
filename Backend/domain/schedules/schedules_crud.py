@@ -43,6 +43,7 @@ def update_user_schedule(db: Session, schedule_id: int, schedule_data: ScheduleC
     db_schedule.updated_at = datetime.now()
     db.commit()
     db.refresh(db_schedule)
+    db_schedule.user_name = db_schedule.user.user_name
     return db_schedule
 
 
