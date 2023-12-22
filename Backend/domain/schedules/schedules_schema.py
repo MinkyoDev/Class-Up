@@ -12,6 +12,7 @@ class ScheduleCreate(BaseModel):
 class Schedule(ScheduleCreate):
     schedule_id: int
     user_id: str
+    user_name: str
     created_at: datetime
     updated_at: datetime
 

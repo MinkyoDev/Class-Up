@@ -4,6 +4,7 @@ from datetime import datetime
 from .freeboard_schema import FreeBoardCreate
 from models import FreeBoard, User
 
+
 def create_freeboard_post(db: Session, post: FreeBoardCreate, user_id: str):
     db_post = FreeBoard(**post.dict(), user_id=user_id, created_at=datetime.now(), updated_at=datetime.now())
     db.add(db_post)
@@ -33,6 +34,7 @@ def update_freeboard_post(db: Session, post_id: int, post_update: FreeBoardCreat
     db_post.updated_at = datetime.now()
     db.commit()
     db.refresh(db_post)
+    db_post.user_name = db_post.user.user_name
     return db_post
 
 

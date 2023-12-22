@@ -24,7 +24,7 @@ def create_freeboard_post(post: freeboard_schema.FreeBoardCreate,
     return freeboard_crud.create_freeboard_post(db=db, post=post, user_id=current_user.user_id)
 
 
-@router.get("/freeboard/user/{user_id}", 
+@router.get("/read_freeboard/user/{user_id}", 
             description="해당 유저의 게시글만 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
@@ -42,7 +42,7 @@ def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
     } for post, user_name in posts]
 
 
-@router.get("/freeboard/all", 
+@router.get("/read_freeboard/all", 
             description="모든 게시글을 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
@@ -60,7 +60,7 @@ def read_all_freeboard_posts(db: Session = Depends(get_db)):
     } for post, user_name in posts]
 
 
-@router.get("/freeboard/my_posts", 
+@router.get("/read_freeboard/my_posts", 
             description="현제 로그인 되어있는 유저의 게시글만 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
@@ -80,7 +80,7 @@ def read_my_freeboard_posts(db: Session = Depends(get_db),
 
 
 
-@router.get("/freeboard/{post_id}", 
+@router.get("/read_freeboard/{post_id}", 
             description="특정 게시글을 조회합니다.", 
             response_model=freeboard_schema.FreeBoardDisplay, 
             tags=["Freeboard"])
@@ -101,7 +101,7 @@ def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
     }
 
 
-@router.put("/freeboard/{post_id}", 
+@router.put("/update_freeboard/{post_id}", 
             description="게시글의 내용을 수정합니다.", 
             response_model=freeboard_schema.FreeBoardDisplay, 
             tags=["Freeboard"])
@@ -118,7 +118,7 @@ def update_freeboard_post(post_id: int,
     return freeboard_crud.update_freeboard_post(db=db, post_id=post_id, post_update=post)
 
 
-@router.delete("/freeboard/{post_id}", 
+@router.delete("/delete_freeboard/{post_id}", 
                description="게시글을 삭제합니다.", 
                status_code=status.HTTP_204_NO_CONTENT, 
                tags=["Freeboard"])
