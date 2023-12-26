@@ -26,8 +26,10 @@ const Logout = () => {
 
   return (
     <>
-    <MDBBtn onClick={handleUpdate} className='me-1' color='info'>정보수정</MDBBtn>
-    <MDBBtn onClick={handleLogout} className='me-1' color='danger'>로그아웃</MDBBtn>
+    <div className="d-grid gap-2">
+    <MDBBtn onClick={handleUpdate} className='ms-0' color='info'>정보수정</MDBBtn>
+    <MDBBtn onClick={handleLogout} className='ms-0' color='danger'>로그아웃</MDBBtn>
+    </div>
     </>
   );
 };

@@ -7,6 +7,11 @@ const serverURL = 'http://221.163.19.218:7783/'; // 서버 URL
 const UserList = () => {
   const [users, setUsers] = useState([]);
 
+  const handleImageClick = (imageUrl) => {
+    // 새 창에서 이미지를 팝업 형태로 보여주기
+    window.open(imageUrl, 'Image', 'width=800,height=600'); 
+  };
+
   useEffect(() => {
     const getUsers = async () => {
       try {
@@ -33,34 +38,35 @@ const UserList = () => {
         </tr>
       </MDBTableHead>
       <MDBTableBody>
-        {users.map((users) => (
-          <tr key={users.user_id}>
+        {users.map((user) => (
+          <tr key={user.user_id}>
             <td>
-                <img
-                  src={users.profile_image ? serverURL + users.profile_image : users.profile_image}
-                  alt={users.user_name}
-                  style={{ width: '45px', height: '45px' }}
-                  className='rounded-circle'
-                />
+            <img
+                src={user.profile_image ? serverURL + user.profile_image : user.profile_image}
+                alt={user.user_name}
+                style={{ width: '65px', height: '65px' }}
+                className='rounded-circle'
+                onClick={() => handleImageClick(serverURL + user.profile_image)} // 개별 이미지 클릭 이벤트
+              />
             </td>
             <td>
               <div className='d-flex align-items-center'>
                 <div className='ms-0'>
-                  <p className='fw-bold mb-1'>{users.user_name}</p>
-                  <p className='text-muted mb-0'>{users.user_id}</p>
+                  <p className='fw-bold mb-1'>{user.user_name}</p>
+                  <p className='text-muted mb-0'>{user.user_id}</p>
                 </div>
               </div>
             </td>
             <td>
-            <MDBBadge color={users.state ? 'success' : 'warning'} pill>
-                  {users.state ? '출근' : '자택'}
+            <MDBBadge color={user.state ? 'success' : 'warning'} pill>
+                  {user.state ? '출근' : '자택'}
                 </MDBBadge>
             </td>
             <td>
-            <p className='fw-normal mb-1'>{users.email}</p>
+            <p className='fw-normal mb-1'>{user.email}</p>
             </td>
             <td>
-              {users.phone_number.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
+              {user.phone_number.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
             </td>
           </tr>
         ))}

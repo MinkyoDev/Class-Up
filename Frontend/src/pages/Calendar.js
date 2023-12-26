@@ -67,9 +67,16 @@ const Calendar = () => {
 
     // 날짜 선택 핸들러
     const handleDateClick = (arg) => {
-        const dateStr = arg.dateStr; // 날짜 형식: "YYYY-MM-DD"
-        setSelectedDate(dateStr);
-        setModalOpen(true);
+      const today = new Date();
+      const clickedDate = new Date(arg.dateStr);
+  
+      // 오늘 날짜 이전을 선택한 경우, 모달을 열지 않음
+      if (clickedDate < today) {
+        return;
+      }
+  
+      setSelectedDate(arg.dateStr);
+      setModalOpen(true);
     };
 
     // 이벤트 클릭 핸들러

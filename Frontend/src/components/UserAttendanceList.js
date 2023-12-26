@@ -53,8 +53,8 @@ const UserAttendanceList = () => {
         </tr>
       </MDBTableHead>
       <MDBTableBody>
-          {userAttendanceList.map((userAttendance) => (
-            <tr key={userAttendance.user_id}>
+          {userAttendanceList.map((userAttendance, index) => (
+            <tr key={index}>
               <td>
                 <p className='fw-normal mb-1'>{formatDateTime(userAttendance.time)}</p>
               </td>

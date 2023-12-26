@@ -35,7 +35,8 @@ const SignUp = () => {
       navigate('/login');
     } catch (error) {
       // 오류 처리
-      alert('회원 가입에 실패했습니다.');
+      alert(error.response.data.detail[0].msg);
+      // alert('회원 가입에 실패했습니다.');
     }
   };
 

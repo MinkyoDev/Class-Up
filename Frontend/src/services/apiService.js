@@ -368,6 +368,34 @@ export const createFreeboardPost = async (postData) => {
   }
 };
 
+// 이미지 업로드 API
+export const uploadImage = async (imageFile) => {
+  try {
+
+    const formData = new FormData();
+    formData.append('file', imageFile);
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.post('/api/freeboard/upload_image', formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`, // 여기서 yourAuthToken은 인증 토큰입니다.
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data; // 이미지 URL 반환
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+};
+
 // 전체 게시글 조회 API
 export const fetchAllFreeboardPosts = async () => {
   try {
@@ -486,8 +514,13 @@ export const fetchComments = async (postId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching comments:', error);
-    throw error;
+    if (error.response && error.response.status === 404) {
+      // 404 오류 발생 시 빈 배열 반환
+      return [];
+    } else {
+      // 다른 오류 발생 시 해당 오류를 다시 던짐
+      throw error;
+    }
   }
 };
 

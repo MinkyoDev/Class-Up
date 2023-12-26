@@ -4,11 +4,18 @@ import { createSchedule } from '../services/apiService';
 
 const ScheduleCreateModal = ({selectedDate, isOpen, onClose}) => {
 
+  // 오늘 날짜보다 하루 뒤의 날짜를 계산하는 함수
+  const getTomorrowDate = () => {
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    return today.toISOString().split('T')[0];
+  };
+
   const [scheduleData, setScheduleData] = useState({
     title: '',
     content: '',
-    start_date: selectedDate || '', // null 대신 빈 문자열 사용
-    end_date: ''
+    start_date: selectedDate || getTomorrowDate(),
+    end_date: selectedDate || ''
   });
 
   const [endDate, setEndDate] = useState('');
@@ -25,7 +32,7 @@ const ScheduleCreateModal = ({selectedDate, isOpen, onClose}) => {
     setScheduleData(prev => ({
       ...prev,
       start_date: selectedDate || '', // null 대신 빈 문자열 사용
-      end_date: prev.end_date || selectedDate || '' // 종료 날짜가 없으면 시작 날짜를 기본값으로 설정
+      end_date: selectedDate || '' // 종료 날짜가 없으면 시작 날짜를 기본값으로 설정
     }));
   }, [selectedDate]);
 
@@ -68,6 +75,7 @@ const ScheduleCreateModal = ({selectedDate, isOpen, onClose}) => {
                 value={scheduleData.start_date}
                 onChange={handleChange}
                 label='시작일'
+                min={getTomorrowDate()} // 오늘 날짜를 min 값으로 설정
                 max={endDate} // 종료 날짜를 최대 선택 가능 날짜로 설정
               />
               <MDBInput
