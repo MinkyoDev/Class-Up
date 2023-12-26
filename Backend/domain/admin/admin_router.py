@@ -19,7 +19,7 @@ router = APIRouter(
 @router.get("/daily_attendance_for_admin", 
             description="해당 날짜의 모든 유저의 정보와 출석 상태를 조회합니다.", 
             tags=["Admin"])
-def get_daily_attendance(attendance_date: date = Query(..., description="The date to check the attendance for"),
+async def get_daily_attendance(attendance_date: date = Query(..., description="The date to check the attendance for"),
                          db: Session = Depends(get_db), 
                          current_user: User = Depends(get_current_user)):
     if not current_user.admin:
@@ -32,7 +32,7 @@ def get_daily_attendance(attendance_date: date = Query(..., description="The dat
             description="관리자로 출석을 합니다.", 
             status_code=status.HTTP_200_OK, 
             tags=["Admin"])
-def check_attendance(user_id: str = Query(...), db: Session = Depends(get_db), 
+async def check_attendance(user_id: str = Query(...), db: Session = Depends(get_db), 
                      current_user: User = Depends(get_current_user)):
     if not current_user.admin:
         raise HTTPException(status_code=400, detail="관리자가 아닙니다.")
@@ -61,7 +61,7 @@ def check_attendance(user_id: str = Query(...), db: Session = Depends(get_db),
 @router.put("/update_employment/{user_id}", 
             response_model=admin_schema.UserSchema, 
             tags=["Admin"])
-def update_user_employment_endpoint(user_id: str, 
+async def update_user_employment_endpoint(user_id: str, 
                                     new_employment: bool, 
                                     db: Session = Depends(get_db),
                                     current_user: User = Depends(get_current_user)):
@@ -76,7 +76,7 @@ def update_user_employment_endpoint(user_id: str,
 @router.put("/update_state/{user_id}", 
             response_model=admin_schema.UserSchema, 
             tags=["Admin"])
-def update_user_state_endpoint(user_id: str, 
+async def update_user_state_endpoint(user_id: str, 
                                new_state: bool, 
                                db: Session = Depends(get_db),
                                current_user: User = Depends(get_current_user)):
@@ -91,7 +91,7 @@ def update_user_state_endpoint(user_id: str,
 @router.put("/update_attendance_type/{user_id}", 
             response_model=admin_schema.UserSchema, 
             tags=["Admin"])
-def update_user_attendance_type_endpoint(user_id: str, 
+async def update_user_attendance_type_endpoint(user_id: str, 
                                          new_attendance_type: bool, 
                                          db: Session = Depends(get_db),
                                          current_user: User = Depends(get_current_user)):

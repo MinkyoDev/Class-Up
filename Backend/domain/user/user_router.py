@@ -50,7 +50,7 @@ def get_current_user(token: str = Depends(oauth2_scheme),
              description="회원 가입 입니다.", 
              status_code=status.HTTP_204_NO_CONTENT, 
              tags=["User"])
-def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
+async def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
     user = user_crud.get_existing_user(db, user_create=_user_create)
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
@@ -62,7 +62,7 @@ def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_
              description="로그인 입니다.", 
              response_model=user_schema.Token, 
              tags=["User"])
-def login_for_access_token_n(user_id: str = Form(...), password: str = Form(...),
+async def login_for_access_token_n(user_id: str = Form(...), password: str = Form(...),
                              db: Session = Depends(get_db)):
 
     user = user_crud.get_user(db, user_id)
@@ -104,7 +104,7 @@ def login_for_access_token_n(user_id: str = Form(...), password: str = Form(...)
              description="swager 페이지 로그인을 위한 API입니다. 실제로는 사용하지 않을 계획입니다.", 
              response_model=user_schema.Token, 
              tags=["User"])
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
                            db: Session = Depends(get_db)):
 
     # check user and password
@@ -148,7 +148,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
             description="모든 유저를 조회합니다.", 
             response_model=list[user_schema.UserState], 
             tags=["User"])
-def get_user_list(db: Session = Depends(get_db),
+async def get_user_list(db: Session = Depends(get_db),
                   current_user: User = Depends(get_current_user)):
     _user_list = user_crud.get_user_state(db)
     return _user_list
@@ -158,7 +158,7 @@ def get_user_list(db: Session = Depends(get_db),
             description="해당 유저의 정보를 조회합니다.", 
             response_model=user_schema.UserResponse, 
             tags=["User"])
-def read_user(db: Session = Depends(get_db),
+async def read_user(db: Session = Depends(get_db),
               current_user: User = Depends(get_current_user)):
     db_user = user_crud.get_user_by_id(db, current_user.user_id)
     if db_user is None:
@@ -170,7 +170,7 @@ def read_user(db: Session = Depends(get_db),
             description="회원 정보를 수정합니다.", 
             response_model=user_schema.UserState, 
             tags=["User"])
-def update_user_info(password: str, 
+async def update_user_info(password: str, 
                      user_update: user_schema.UserUpdate, 
                      db: Session = Depends(get_db),
                      current_user: User = Depends(get_current_user)):
@@ -187,7 +187,7 @@ def update_user_info(password: str,
 @router.put("/deactivate/{user_id}", 
             description="해당 유저를 비활성화 시킵니다.", 
             tags=["User"])
-def deactivate_user_account(db: Session = Depends(get_db),
+async def deactivate_user_account(db: Session = Depends(get_db),
                             current_user: User = Depends(get_current_user)):
     deactivated_user = user_crud.deactivate_user(db, current_user.user_id)
     if deactivated_user is None:

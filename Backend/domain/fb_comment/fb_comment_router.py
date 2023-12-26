@@ -16,17 +16,20 @@ router = APIRouter(
             description="댓글을 등록합니다.", 
              response_model=fb_comment_schema.CommentDisplay,
              tags=["Freeboard Comment"])
-def add_comment(comment: fb_comment_schema.CommentCreate, 
+async def add_comment(comment: fb_comment_schema.CommentCreate, 
                 db: Session = Depends(get_db), 
                 current_user: User = Depends(get_current_user)):
-    return fb_comment_crud.create_comment(db=db, comment_create=comment, user_id=current_user.user_id)
+    comment = fb_comment_crud.create_comment(db=db, comment_create=comment, user_id=current_user.user_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Invalid post_id: Post does not exist")
+    return comment
 
 
 @router.get("/read_comment/{post_id}", 
             description="해당 게시글에 대한 댓글을 조회합니다.", 
             response_model=List[fb_comment_schema.CommentDisplay],
             tags=["Freeboard Comment"])
-def read_comments(post_id: int, db: Session = Depends(get_db)):
+async def read_comments(post_id: int, db: Session = Depends(get_db)):
     comments = fb_comment_crud.get_comments_by_post_id(db, post_id)
     if not comments:
         raise HTTPException(status_code=404, detail="Comments not found")
@@ -45,7 +48,7 @@ def read_comments(post_id: int, db: Session = Depends(get_db)):
             description="댓글을 수정합니다.", 
             response_model=fb_comment_schema.CommentDisplay, 
             tags=["Freeboard Comment"])
-def update_comment_endpoint(comment_id: int, 
+async def update_comment_endpoint(comment_id: int, 
                             content: str, 
                             db: Session = Depends(get_db), 
                             current_user: User = Depends(get_current_user)):
@@ -63,7 +66,7 @@ def update_comment_endpoint(comment_id: int,
             description="댓글을 삭제합니다.", 
                status_code=204, 
                tags=["Freeboard Comment"])
-def delete_comment_endpoint(comment_id: int, 
+async def delete_comment_endpoint(comment_id: int, 
                             db: Session = Depends(get_db), 
                             current_user: User = Depends(get_current_user)):
     result = fb_comment_crud.delete_comment(db=db, comment_id=comment_id, user_id=current_user.user_id)

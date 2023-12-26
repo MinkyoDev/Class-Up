@@ -20,7 +20,7 @@ router = APIRouter(
             description="출석을 합니다.", 
             status_code=status.HTTP_200_OK, 
             tags=["Attendance"])
-def check_attendance(db: Session = Depends(get_db), 
+async def check_attendance(db: Session = Depends(get_db), 
                      current_user: User = Depends(get_current_user)):
     today = date.today()
     weekday = today.weekday()
@@ -56,7 +56,7 @@ def check_attendance(db: Session = Depends(get_db),
             description="온라인 유저의 출석을 합니다.", 
             status_code=status.HTTP_200_OK, 
             tags=["Attendance"])
-def check_attendance(db: Session = Depends(get_db), 
+async def check_attendance(db: Session = Depends(get_db), 
                      current_user: User = Depends(get_current_user)):
 
     if current_user.attendance_type:
@@ -96,7 +96,7 @@ def check_attendance(db: Session = Depends(get_db),
             description="모든 출석 현황을 조회합니다.", 
             response_model=list[attendance_schema.Attendance], 
             tags=["Attendance"])
-def get_attendance_all_list(db: Session = Depends(get_db), 
+async def get_attendance_all_list(db: Session = Depends(get_db), 
                   current_user: User = Depends(get_current_user)):
     _attendance_list = attendance_crud.get_all_attendance_list(db)
     return _attendance_list
@@ -106,7 +106,7 @@ def get_attendance_all_list(db: Session = Depends(get_db),
             description="해당 유저의 출석 기록을 조회합니다.", 
             response_model=list[attendance_schema.Attendance], 
             tags=["Attendance"])
-def get_user_attendance(db: Session = Depends(get_db),
+async def get_user_attendance(db: Session = Depends(get_db),
                         current_user: User = Depends(get_current_user)):
     user_attendance_list = attendance_crud.get_user_attendance_list(db, current_user.user_id)
     return user_attendance_list
@@ -116,7 +116,7 @@ def get_user_attendance(db: Session = Depends(get_db),
             description="해당 유저의 오늘 출석 기록을 조회합니다.", 
             response_model=list[attendance_schema.Attendance], 
             tags=["Attendance"])
-def get_user_attendance(db: Session = Depends(get_db),
+async def get_user_attendance(db: Session = Depends(get_db),
                         current_user: User = Depends(get_current_user)):
     user_attendance_list = attendance_crud.get_today_user_attendance_list(db, current_user.user_id)
     return user_attendance_list
@@ -125,7 +125,7 @@ def get_user_attendance(db: Session = Depends(get_db),
 @router.get("/attendance_stats/{username}", 
             description="해당 유저의 출석(present), 지각(late), 결석(absent) 횟수와 벌금을 계산합니다.", 
             tags=["Attendance"])
-def get_attendance_stats(db: Session = Depends(get_db),
+async def get_attendance_stats(db: Session = Depends(get_db),
                          current_user: User = Depends(get_current_user)):
     stats = attendance_crud.calculate_attendance_stats(db, current_user.user_id)
     return stats
@@ -134,7 +134,7 @@ def get_attendance_stats(db: Session = Depends(get_db),
 @router.get("/fine_ranking", 
             description="전체 유저의 벌금을 계산하고 높을 순서데로 정렬합니다.", 
             tags=["Attendance"])
-def get_all_attendance_stats(db: Session = Depends(get_db), 
+async def get_all_attendance_stats(db: Session = Depends(get_db), 
                              current_user: User = Depends(get_current_user)):
     return attendance_crud.calculate_all_users_attendance_stats(db)
 
@@ -142,7 +142,7 @@ def get_all_attendance_stats(db: Session = Depends(get_db),
 @router.get("/daily_attendance", 
             description="해당 날짜의 모든 유저의 출석 상태를 조회합니다.", 
             tags=["Attendance"])
-def get_daily_attendance(attendance_date: date = Query(..., description="The date to check the attendance for"),
+async def get_daily_attendance(attendance_date: date = Query(..., description="The date to check the attendance for"),
                          db: Session = Depends(get_db), 
                          current_user: User = Depends(get_current_user)):
     attendance_stats = attendance_crud.get_daily_attendance_stats(db, attendance_date)
