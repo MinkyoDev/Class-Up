@@ -13,6 +13,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     phone_number = Column(String(255), unique=True, nullable=False)
     profile_image = Column(String(255), unique=False, nullable=False)
+    profile_color = Column(String(255), unique=False, nullable=True)
     employment = Column(Boolean, nullable=False)
     state = Column(Boolean, nullable=False)
     attendance_type = Column(Boolean, nullable=False)
@@ -26,6 +27,7 @@ class Attendance(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
     time = Column(DateTime, nullable=True)
+    date = Column(Date, nullable=False)
     state = Column(String(255), nullable=False)
 
     user = relationship("User", foreign_keys=[user_id]) 

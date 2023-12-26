@@ -1,11 +1,12 @@
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 
 class Attendance(BaseModel):
     user_id: str
-    time : datetime
+    time : Optional[datetime]
+    date : date
     state : str
 
 

@@ -12,6 +12,27 @@ class UserCreate(BaseModel):
     email: EmailStr
     phone_number: str
 
+    @field_validator('password1')
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('비밀번호는 최소 6자리여야 합니다.')
+
+        # 문자, 숫자, 특수문자를 각각 확인하는 정규식 패턴
+        patterns = [
+            re.compile(r"[a-zA-Z]"),  # 문자
+            re.compile(r"\d"),        # 숫자
+            re.compile(r"[^a-zA-Z0-9]")  # 특수문자
+        ]
+
+        # 유효한 패턴의 수
+        valid_pattern_count = sum(bool(pattern.search(v)) for pattern in patterns)
+
+        # 최소 2개의 패턴이 일치해야 함
+        if valid_pattern_count < 2:
+            raise ValueError('비밀번호는 문자, 숫자, 특수문자 중 2개 이상을 포함해야 합니다.')
+
+        return v
+
     @field_validator('user_id', 'user_name', 'password1', 'password2', 'email')
     def not_empty(cls, v):
         if not v or not v.strip():
