@@ -78,7 +78,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Scheduler
 scheduler = BackgroundScheduler()
-scheduler.add_job(scheduled_task, 'cron', hour=21, minute=4)
+scheduler.add_job(scheduled_task, 'cron', hour=19, minute=25)
 scheduler.start()
 
 # Router

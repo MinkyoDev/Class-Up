@@ -7,7 +7,7 @@ import holidays
 import os
 
 from database import get_db 
-from models import Attendance, User
+from models import Attendance, User, UserSchedules
 import lib.const as const
 from database import SessionLocal
 
@@ -16,54 +16,6 @@ load_dotenv()
 db_user = os.getenv('MYSQL_USER')
 db_password = os.getenv('MYSQL_PASSWORD')
 db_name = os.getenv('MYSQL_DATABASE')
-
-
-def process_absent_users(db: Session):
-    today = datetime.today().date()
-
-    attended_users = db.query(Attendance.user_id).filter(Attendance.time >= today).all()
-    attended_user_ids = [user.user_id for user in attended_users]
-
-    absent_users = db.query(User).filter(User.user_id.notin_(attended_user_ids)).all()
-
-    for user in absent_users:
-        absence = Attendance(user_id=user.user_id, time=None, state="absent")
-        db.add(absence)
-    db.commit()
-
-
-def add_attendance_to_db():
-    print("Add today's attendance")
-    db = next(get_db())
-    try:
-        today = datetime.now()
-        today_midnight = today.replace(hour=0, minute=0, second=0, microsecond=0)
-
-        if today.weekday() in [5, 6]:
-            print("주말에는 출석 기록을 추가하지 않습니다.")
-            return
-        kr_holidays = holidays.KR()
-        if today.date() in kr_holidays:
-            print("공휴일에는 출석 기록을 추가하지 않습니다.")
-            return
-
-        all_users = db.query(User).all()
-
-        for user in all_users:
-            existing_record = db.query(Attendance).filter(
-                Attendance.user_id == user.user_id,
-                Attendance.time == today_midnight
-            ).first()
-            if not existing_record:
-                new_record = Attendance(user_id=user.user_id,
-                                        time=today_midnight,
-                                        state="absent")
-                db.add(new_record)
-
-        db.commit()
-
-    finally:
-        db.close()
 
 
 def backup_database():
@@ -84,16 +36,53 @@ def backup_database():
         print(f"Backup failed: {stderr}")
 
 
-# def schedulers():
-#     print("Scheduler Run!")
-#     add_attendance_to_db()
-#     backup_database()
-        
+def process_absent_users(db: Session):
+    today = datetime.today().date()
+
+    if today.weekday() in [5, 6]:
+        print("주말에는 출석 기록을 추가하지 않습니다.")
+        return
+    kr_holidays = holidays.KR()
+    if today in kr_holidays:
+        print("공휴일에는 출석 기록을 추가하지 않습니다.")
+        return
+
+    # 오늘 스케줄이 있는 유저들의 ID 목록을 가져옵니다.
+    scheduled_users = db.query(UserSchedules.user_id).filter(
+        UserSchedules.start_date <= today,
+        UserSchedules.end_date >= today
+    ).all()
+    scheduled_user_ids = [user.user_id for user in scheduled_users]
+
+    # 오늘 출석한 유저들의 ID 목록을 가져옵니다.
+    attended_users = db.query(Attendance.user_id).filter(
+        Attendance.date >= today,
+        Attendance.state.in_(["present", "late", "absent", "off"])  # 출석 또는 지각으로 처리된 유저들
+    ).all()
+    attended_user_ids = [user.user_id for user in attended_users]
+    print(attended_user_ids)
+    # 스케줄이 있거나 출석한 유저를 제외한 나머지 유저들을 조회합니다.
+    absent_users = db.query(User).filter(
+        User.user_id.notin_(attended_user_ids)
+    ).all()
+
+    for user in absent_users:
+        # 스케줄이 있는 유저들은 'off', 그 외는 'absent'로 처리합니다.
+        state = "off" if user.user_id in scheduled_user_ids else "absent"
+        absence = Attendance(user_id=user.user_id, 
+                             time=None, 
+                             date=today, 
+                             state=state)
+        db.add(absence)
+    
+    db.commit()
+
 
 def scheduled_task():
-    print("Scheduler Run!")
+    print("Scheduled Task Running!")
     db = SessionLocal()
     try:
         process_absent_users(db)
+        backup_database()
     finally:
         db.close()

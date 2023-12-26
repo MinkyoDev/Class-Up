@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.post("/create_schedule", 
-             description="스케줄을 등록합니다. 스케줄은 18시 이전까지만 등록 가능합니다.", 
+             description="스케줄을 등록합니다. 스케줄은 9시 부터 18시 사이에만 등록 가능합니다.", 
              response_model=schedules_schema.Schedule, 
              status_code=status.HTTP_201_CREATED,
              tags=["Schedules"])

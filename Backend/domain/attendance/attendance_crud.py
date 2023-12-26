@@ -25,7 +25,7 @@ def get_today_user_attendance_list(db: Session, user_id: str):
 
     return db.query(Attendance)\
              .filter(Attendance.user_id == user_id)\
-             .filter(func.date(Attendance.time) == today)\
+             .filter(Attendance.date == today)\
              .order_by(Attendance.id)\
              .all()
 
@@ -45,6 +45,7 @@ def attendance_check(db: Session, check_attendance: UserCreate, state: str):
     else:
         new_attendance = Attendance(user_id=check_attendance.user_id,
                                     time=datetime.now(),
+                                    date=datetime.now().date(),
                                     state=state)
         db.add(new_attendance)
     db.commit()
@@ -81,7 +82,6 @@ def caculate_attendance_time(start, end):
 def calculate_attendance_stats(db: Session, user_id: str):
     current_year = datetime.now().year
     current_month = datetime.now().month
-
     last_day = calendar.monthrange(current_year, current_month)[1]
 
     if const.START_DAY == 0:
@@ -100,24 +100,29 @@ def calculate_attendance_stats(db: Session, user_id: str):
 
     present_count = db.query(func.count()).filter(
         Attendance.user_id == user_id,
-        Attendance.time.between(start_date, end_date),
+        Attendance.date.between(start_date, end_date),
         Attendance.state == 'present'
     ).scalar()
 
     late_count = db.query(func.count()).filter(
         Attendance.user_id == user_id,
-        Attendance.time.between(start_date, end_date),
+        Attendance.date.between(start_date, end_date),
         Attendance.state == 'late'
     ).scalar()
 
     absent_count = db.query(func.count()).filter(
         Attendance.user_id == user_id,
-        Attendance.time.between(start_date, end_date),
+        Attendance.date.between(start_date, end_date),
         Attendance.state == 'absent'
     ).scalar()
 
-    # total_days = (end_date - start_date).days
-    total_fine = late_count*const.LATE_FINE + absent_count*const.ABSENT_FINE
+    off_count = db.query(func.count()).filter(
+        Attendance.user_id == user_id,
+        Attendance.date.between(start_date, end_date),
+        Attendance.state == 'off'
+    ).scalar()
+
+    total_fine = late_count * const.LATE_FINE + absent_count * const.ABSENT_FINE
 
     return {
         "start_date": start_date,
@@ -125,6 +130,7 @@ def calculate_attendance_stats(db: Session, user_id: str):
         "attendance_count": present_count,
         "late_count": late_count,
         "absent_count": absent_count,
+        "off_count": off_count,
         "total_fine": total_fine
     }
 
@@ -143,7 +149,7 @@ def calculate_all_users_attendance_stats(db: Session):
 
 def get_daily_attendance_stats(db: Session, date: datetime.date):
     users = db.query(User).all()
-    attendance_records = db.query(Attendance).filter(Attendance.time >= date, Attendance.time < date + timedelta(days=1)).all()
+    attendance_records = db.query(Attendance).filter(Attendance.date >= date, Attendance.date < date + timedelta(days=1)).all()
 
     attendance_stats = []
     for user in users:
