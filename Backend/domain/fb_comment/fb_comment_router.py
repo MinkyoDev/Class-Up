@@ -31,8 +31,6 @@ async def add_comment(comment: fb_comment_schema.CommentCreate,
             tags=["Freeboard Comment"])
 async def read_comments(post_id: int, db: Session = Depends(get_db)):
     comments = fb_comment_crud.get_comments_by_post_id(db, post_id)
-    if not comments:
-        raise HTTPException(status_code=404, detail="Comments not found")
     return [fb_comment_schema.CommentDisplay(
         comment_id=comment.comment_id,
         post_id=comment.post_id,
