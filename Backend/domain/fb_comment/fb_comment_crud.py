@@ -1,11 +1,15 @@
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 
-from models import FBComment, User
+from models import FBComment, FreeBoard
 from .fb_comment_schema import CommentCreate
 
 
+
 def create_comment(db: Session, comment_create: CommentCreate, user_id: str):
+    if not db.query(FreeBoard).filter(FreeBoard.post_id == comment_create.post_id).first():
+        return None
+
     db_comment = FBComment(
         post_id=comment_create.post_id,
         user_id=user_id,
@@ -16,6 +20,7 @@ def create_comment(db: Session, comment_create: CommentCreate, user_id: str):
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
+    db_comment.user_name = db_comment.user.user_name
     return db_comment
 
 

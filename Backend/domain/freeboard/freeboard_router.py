@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from fastapi.responses import Response
 from typing import List
+from pathlib import Path
+from uuid import uuid4
+import shutil
 
 from domain.freeboard import freeboard_crud, freeboard_schema
 from database import get_db
@@ -18,7 +21,7 @@ router = APIRouter(
              response_model=freeboard_schema.FreeBoardCreateReturn, 
              status_code=status.HTTP_201_CREATED,
              tags=["Freeboard"])
-def create_freeboard_post(post: freeboard_schema.FreeBoardCreate, 
+async def create_freeboard_post(post: freeboard_schema.FreeBoardCreate, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
     return freeboard_crud.create_freeboard_post(db=db, post=post, user_id=current_user.user_id)
@@ -28,7 +31,7 @@ def create_freeboard_post(post: freeboard_schema.FreeBoardCreate,
             description="해당 유저의 게시글만 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
-def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
+async def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
     posts = freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=user_id)
     return [{
         "post_id": post.post_id, 
@@ -46,7 +49,7 @@ def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_db)):
             description="모든 게시글을 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
-def read_all_freeboard_posts(db: Session = Depends(get_db)):
+async def read_all_freeboard_posts(db: Session = Depends(get_db)):
     posts = freeboard_crud.get_all_freeboard_posts(db=db)
     return [{
         "post_id": post.post_id, 
@@ -64,7 +67,7 @@ def read_all_freeboard_posts(db: Session = Depends(get_db)):
             description="현제 로그인 되어있는 유저의 게시글만 조회합니다.", 
             response_model=List[freeboard_schema.FreeBoardDisplay], 
             tags=["Freeboard"])
-def read_my_freeboard_posts(db: Session = Depends(get_db), 
+async def read_my_freeboard_posts(db: Session = Depends(get_db), 
                             current_user: User = Depends(get_current_user)):
     posts = freeboard_crud.get_freeboard_posts_by_user(db=db, user_id=current_user.user_id)
     return [{
@@ -84,7 +87,7 @@ def read_my_freeboard_posts(db: Session = Depends(get_db),
             description="특정 게시글을 조회합니다.", 
             response_model=freeboard_schema.FreeBoardDisplay, 
             tags=["Freeboard"])
-def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
+async def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
     post = freeboard_crud.get_freeboard_post_by_id(db=db, post_id=post_id)
     if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
@@ -105,7 +108,7 @@ def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
             description="게시글의 내용을 수정합니다.", 
             response_model=freeboard_schema.FreeBoardDisplay, 
             tags=["Freeboard"])
-def update_freeboard_post(post_id: int, 
+async def update_freeboard_post(post_id: int, 
                           post: freeboard_schema.FreeBoardCreate, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
@@ -122,7 +125,7 @@ def update_freeboard_post(post_id: int,
                description="게시글을 삭제합니다.", 
                status_code=status.HTTP_204_NO_CONTENT, 
                tags=["Freeboard"])
-def delete_freeboard_post(post_id: int, 
+async def delete_freeboard_post(post_id: int, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
     db_post = freeboard_crud.get_freeboard_post_by_id(db, post_id)
@@ -135,3 +138,23 @@ def delete_freeboard_post(post_id: int,
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         raise HTTPException(status_code=500, detail="Error deleting post")
+    
+
+@router.post("/upload_image", 
+             description="자유게시판에 사진을 등록 합니다.", 
+             tags=["Freeboard"])
+async def upload_image(file: UploadFile = File(...), 
+                               db: Session = Depends(get_db), 
+                               current_user: User = Depends(get_current_user)):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid image")
+
+    file_name = f"{uuid4()}{Path(file.filename).suffix}"
+    file_path = Path("static/freeboard") / file_name
+
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {"file_path": file_path}

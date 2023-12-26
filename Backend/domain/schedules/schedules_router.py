@@ -21,7 +21,7 @@ router = APIRouter(
              response_model=schedules_schema.Schedule, 
              status_code=status.HTTP_201_CREATED,
              tags=["Schedules"])
-def create_schedule(schedule: schedules_schema.ScheduleCreate, 
+async def create_schedule(schedule: schedules_schema.ScheduleCreate, 
                     db: Session = Depends(get_db), 
                     current_user: User = Depends(get_current_user)):
     
@@ -38,7 +38,7 @@ def create_schedule(schedule: schedules_schema.ScheduleCreate,
             description="해당 유저의 스케줄을 조회합니다.", 
             response_model=List[schedules_schema.Schedule], 
             tags=["Schedules"])
-def read_user_schedules(db: Session = Depends(get_db), 
+async def read_user_schedules(db: Session = Depends(get_db), 
                         current_user: User = Depends(get_current_user)):
     schedules = schedules_crud.get_user_schedules(db=db, user_id=current_user.user_id)
     return [
@@ -60,7 +60,7 @@ def read_user_schedules(db: Session = Depends(get_db),
             description="모든 유저의 스케줄을 조회합니다.", 
             response_model=List[schedules_schema.Schedule], 
             tags=["Schedules"])
-def read_all_schedules(db: Session = Depends(get_db),
+async def read_all_schedules(db: Session = Depends(get_db),
                        current_user: User = Depends(get_current_user)):
     schedules = schedules_crud.get_all_schedules(db=db)
     return [
@@ -82,7 +82,7 @@ def read_all_schedules(db: Session = Depends(get_db),
             description="스케줄 정보를 수정합니다.", 
             response_model=schedules_schema.Schedule, 
             tags=["Schedules"])
-def update_schedule(schedule_id: int, 
+async def update_schedule(schedule_id: int, 
                     schedule: schedules_schema.ScheduleCreate, 
                     db: Session = Depends(get_db), 
                     current_user: User = Depends(get_current_user)):
@@ -102,7 +102,7 @@ def update_schedule(schedule_id: int,
                description="스케줄을 삭제합니다.", 
                status_code=status.HTTP_204_NO_CONTENT, 
                tags=["Schedules"])
-def delete_schedule(schedule_id: int, 
+async def delete_schedule(schedule_id: int, 
                     db: Session = Depends(get_db), 
                     current_user: User = Depends(get_current_user)):
     existing_schedule = schedules_crud.get_schedule_by_id(db, schedule_id)
