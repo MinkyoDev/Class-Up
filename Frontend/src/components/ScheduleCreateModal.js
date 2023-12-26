@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MDBModal, MDBModalDialog, MDBModalContent, MDBModalHeader, MDBModalTitle, MDBModalBody, MDBBtn, MDBInput } from 'mdb-react-ui-kit';
 import { createSchedule } from '../services/apiService';
 
@@ -7,9 +7,27 @@ const ScheduleCreateModal = ({selectedDate, isOpen, onClose}) => {
   const [scheduleData, setScheduleData] = useState({
     title: '',
     content: '',
-    start_datetime: selectedDate || '',
-    end_datetime: ''
+    start_date: selectedDate || '', // null 대신 빈 문자열 사용
+    end_date: ''
   });
+
+  const [endDate, setEndDate] = useState('');
+
+  // 종료 날짜 변경 시 endDate 상태를 업데이트
+  useEffect(() => {
+    if (scheduleData.end_date) {
+      setEndDate(scheduleData.end_date);
+    }
+  }, [scheduleData.end_date]);
+
+  // selectedDate가 변경될 때마다 scheduleData 상태를 업데이트합니다.
+  useEffect(() => {
+    setScheduleData(prev => ({
+      ...prev,
+      start_date: selectedDate || '', // null 대신 빈 문자열 사용
+      end_date: prev.end_date || selectedDate || '' // 종료 날짜가 없으면 시작 날짜를 기본값으로 설정
+    }));
+  }, [selectedDate]);
 
   const handleChange = (e) => {
     setScheduleData({ ...scheduleData, [e.target.name]: e.target.value });
@@ -45,19 +63,21 @@ const ScheduleCreateModal = ({selectedDate, isOpen, onClose}) => {
               <MDBInput className='mb-4' type='text' name='content' value={scheduleData.content} onChange={handleChange} label='내용' />
               <MDBInput
                 className='mb-4'
-                type='datetime-local'
-                name='start_datetime'
-                value={scheduleData.start_datetime}
+                type='date'
+                name='start_date'
+                value={scheduleData.start_date}
                 onChange={handleChange}
-                label='시작 시간'
+                label='시작일'
+                max={endDate} // 종료 날짜를 최대 선택 가능 날짜로 설정
               />
               <MDBInput
                 className='mb-4'
-                type='datetime-local'
-                name='end_datetime'
-                value={scheduleData.end_datetime}
+                type='date'
+                name='end_date'
+                value={scheduleData.end_date}
                 onChange={handleChange}
-                label='종료 시간'
+                label='종료일'
+                min={scheduleData.start_date} // 시작 날짜를 min 값으로 설정
               />
               <MDBBtn type='submit' className='mb-4' block>스케줄 등록</MDBBtn>
             </form>

@@ -43,11 +43,11 @@ const Calendar = () => {
           try {
             const schedules = await fetchAllSchedules();
             const formattedEvents = schedules.map(schedule => ({
-              title: schedule.title,
+              title: `${schedule.user_name} - ${schedule.title}`,
               content: schedule.content,
               id: schedule.schedule_id,
-              start: schedule.start_datetime,
-              end: schedule.end_datetime
+              start: schedule.start_date,
+              end: addOneDay(schedule.end_date) // 종료 날짜에 하루 추가
             }));
             setEvents(formattedEvents);
           } catch (error) {
@@ -58,19 +58,38 @@ const Calendar = () => {
         getSchedules();
       }, []);
 
-      const handleDateClick = (arg) => {
-        const date = new Date(arg.dateStr);
-        const formattedDate = date.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm' 형식으로 변환
-        setSelectedDate(formattedDate);
-        setModalOpen(true);
-      };
+    // 날짜 문자열에 하루를 추가하는 함수
+    const addOneDay = (dateStr) => {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + 1); // 하루 추가
+        return date.toISOString().split('T')[0]; // 날짜만 추출
+    };
 
-      // 이벤트 클릭 핸들러
+    // 날짜 선택 핸들러
+    const handleDateClick = (arg) => {
+        const dateStr = arg.dateStr; // 날짜 형식: "YYYY-MM-DD"
+        setSelectedDate(dateStr);
+        setModalOpen(true);
+    };
+
+    // 이벤트 클릭 핸들러
     const handleEventClick = (clickInfo) => {
-        setSelectedEvent(clickInfo.event);
-        console.log("Selected Event:", clickInfo.event); // 이벤트 객체 로그
+        console.log(clickInfo.event.id);
+        setSelectedEvent({
+        ...clickInfo.event,
+        id: clickInfo.event.id,
+        title: clickInfo.event.title,
+        content: clickInfo.event.extendedProps.content,
+        start: addOneDay(formatDateStr(clickInfo.event.start)),
+        end: formatDateStr(clickInfo.event.end)
+        });
         setViewModalOpen(true);
     };
+
+    // 날짜를 "YYYY-MM-DD" 형식으로 포맷팅하는 함수
+  const formatDateStr = (date) => {
+    return date.toISOString().split('T')[0]; // 날짜만 추출
+  };
 
   return (
     <>
@@ -162,16 +181,12 @@ const Calendar = () => {
       navLinkHint={"클릭시 해당 날짜로 이동합니다."} // 날짜에 호버시 힌트 문구
       // eventContent={fn(): node {} || true} // 일정 커스텀
       eventsSet={function () {
-        console.log("eventsSet");
       }} // 
       eventAdd={function () {
-        console.log("eventAdd");
       }} // 추가시 로직
       eventDrop={function () {
-        console.log("eventDrop");
       }} // 드롭시 로직
       eventRemove={function () {
-        console.log("eventRemove");
       }} // 제거시 로직
     />
           </div>
