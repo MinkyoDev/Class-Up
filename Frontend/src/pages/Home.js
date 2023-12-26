@@ -11,6 +11,7 @@ import { useUserContext } from '../contexts/UserContext';
 import { checkAttendance, getTodayUserAttendance } from '../services/apiService';
 import Navbar from '../components/Navbar';
 import UserList from '../components/UserList';
+import TodayAttendanceList from '../components/TodayAttendanceList'
 
 const Home = () => {
     const { userInfo } = useUserContext();
@@ -69,7 +70,7 @@ const Home = () => {
                         </MDBBtn>
                 </div>
                 <div>
-                    <UserList />
+                    <TodayAttendanceList />
                 </div>
             </div>
             

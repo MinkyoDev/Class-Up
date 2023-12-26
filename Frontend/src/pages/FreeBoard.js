@@ -10,9 +10,9 @@ import {
 import { useUserContext } from '../contexts/UserContext';
 import Navbar from '../components/Navbar';
 import { createFreeboardPost, fetchAllFreeboardPosts } from '../services/apiService';
-import CreatePost from '../components/CreatePost';
+import CreatePost from './CreatePost';
 import PostList from '../components/PostList';
-import ViewPost from '../components/ViewPost';
+import ViewPost from './FreeBoardView';
 import { useNavigate } from 'react-router-dom';
 
 const FreeBoard = () => {
@@ -25,8 +25,8 @@ const FreeBoard = () => {
         navigate('/createpost');
       };
 
-    const handleSelectPost = (post) => {
-        setSelectedPost(post);
+    const handleSelectPost = (postId) => {
+        navigate(`/freeboard/${postId}`);
       };
     
       return (
@@ -37,8 +37,7 @@ const FreeBoard = () => {
           <div className="main-content">
             <h1>자유 게시판</h1>
             <MDBBtn onClick={handleCreatePost} className='me-1 float-end' color='success'>작성</MDBBtn>
-            <PostList />
-            <ViewPost />
+            <PostList onSelectPost={handleSelectPost} />
           </div>
         </div>
       </div>

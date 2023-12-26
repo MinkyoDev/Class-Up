@@ -21,7 +21,16 @@ const UserAttendanceStat = () => {
   }, [userInfo.user_name]);
 
   return (
-    <MDBTable>
+  <>
+    <h4>{userInfo.user_name} 님은 
+    출석 {attendanceStats.attendance_count} 회, 
+    지각 {attendanceStats.late_count} 회, 
+    결석 {attendanceStats.absent_count} 회 하셨군요!
+    </h4>
+    <h4>
+    그래서 총 벌금은 {attendanceStats.total_fine} 원 을 내신답니다!
+    </h4>
+    {/* <MDBTable>
       <MDBTableHead>
         <tr>
           <th>출석</th>
@@ -32,13 +41,14 @@ const UserAttendanceStat = () => {
       </MDBTableHead>
       <MDBTableBody>
         <tr>
-          <td>{attendanceStats.attendance_count}</td>
+          <td>석{attendanceStats.attendance_count}</td>
           <td>{attendanceStats.late_count}</td>
           <td>{attendanceStats.absent_count}</td>
           <td>{attendanceStats.total_fine}</td>
         </tr>
       </MDBTableBody>
-    </MDBTable>
+    </MDBTable> */}
+    </>
   );
 };
 

@@ -380,9 +380,9 @@ export const fetchAllFreeboardPosts = async () => {
       throw new Error('인증 토큰이 없습니다.');
     }
 
-    const response = await axiosInstance.get('/api/freeboard/freeboard/all', {
+    const response = await axiosInstance.get('/api/freeboard/read_freeboard/all', {
       headers: {
-        'Authorization': `Bearer ${token}`, // 여기서 yourAuthToken은 인증 토큰입니다.
+        'Authorization': `Bearer ${token}`, 
         'Content-Type': 'application/json'
       }
     });
@@ -394,4 +394,122 @@ export const fetchAllFreeboardPosts = async () => {
   }
 };
 
+// 단일 게시글 조회 API
+export const fetchFreeboardPost = async (postId) => {
+  try {
 
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get(`/api/freeboard/read_freeboard/${postId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Freeboard Post Error:', error);
+    throw error;
+  }
+};
+
+// 벌금 랭킹 조회 API
+export const getFineRanking = async () => {
+  try {
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get('/api/attendance/fine_ranking', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Get Fine Ranking Error:', error);
+    throw error;
+  }
+};
+
+// 해당 날짜의 모든 유저의 출석 상태 조회 API
+export const getDailyAttendance = async (date) => {
+  try {
+
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get(`/api/attendance/daily_attendance?attendance_date=${date}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching daily attendance:', error);
+    throw error;
+  }
+};
+
+// 댓글 조회 함수
+export const fetchComments = async (postId) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get(`/api/fb_comments/read_comment/${postId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    throw error;
+  }
+};
+
+// 댓글 추가 함수
+export const addComment = async (commentData) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.post('/api/fb_comments/create_comment', commentData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    throw error;
+  }
+};

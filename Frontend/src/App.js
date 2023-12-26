@@ -13,7 +13,9 @@ import Approval from './pages/Approval';
 import Study from './pages/Study';
 import FreeBoard from './pages/FreeBoard';
 import UserUpdate from './pages/UserUpdate';
-import CreatePost from './components/CreatePost';
+import CreatePost from './pages/CreatePost';
+import FreeBoardView from './pages/FreeBoardView';
+import UserView from './pages/UserView';
 import UserList from './components/UserList';
 import AttendanceList from './components/AttendanceList';
 import PrivateRoute from './components/PrivateRoute';
@@ -38,6 +40,8 @@ function App() {
           <Route path="/userupdate" element={<PrivateRoute><UserUpdate /></PrivateRoute>} />
           <Route path="/freeboard" element={<PrivateRoute><FreeBoard /></PrivateRoute>} />
           <Route path="/createpost" element={<PrivateRoute><CreatePost /></PrivateRoute>} />
+          <Route path="/freeboard/:postId" element={<PrivateRoute><FreeBoardView /></PrivateRoute>} />
+          <Route path="/userlist" element={<PrivateRoute><UserView /></PrivateRoute>} />
         </Routes>
       </Router>
     </UserProvider>
