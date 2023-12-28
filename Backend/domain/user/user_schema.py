@@ -17,17 +17,14 @@ class UserCreate(BaseModel):
         if len(v) < 6:
             raise ValueError('비밀번호는 최소 6자리여야 합니다.')
 
-        # 문자, 숫자, 특수문자를 각각 확인하는 정규식 패턴
         patterns = [
             re.compile(r"[a-zA-Z]"),  # 문자
             re.compile(r"\d"),        # 숫자
             re.compile(r"[^a-zA-Z0-9]")  # 특수문자
         ]
 
-        # 유효한 패턴의 수
         valid_pattern_count = sum(bool(pattern.search(v)) for pattern in patterns)
 
-        # 최소 2개의 패턴이 일치해야 함
         if valid_pattern_count < 2:
             raise ValueError('비밀번호는 문자, 숫자, 특수문자 중 2개 이상을 포함해야 합니다.')
 
@@ -59,7 +56,10 @@ class UserState(BaseModel):
     email : str
     phone_number : str
     profile_image : str
+    profile_color: Optional[str]
+    employment : bool
     state: bool
+    attendance_type : bool
 
 
 class UserUpdate(BaseModel):
@@ -67,6 +67,28 @@ class UserUpdate(BaseModel):
     user_name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
+    profile_color: Optional[str] = None
+    employment: Optional[bool] = None
+    state: Optional[bool] = None
+    attendance_type: Optional[bool] = None
+
+    @field_validator('new_password')
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('비밀번호는 최소 6자리여야 합니다.')
+
+        patterns = [
+            re.compile(r"[a-zA-Z]"),  # 문자
+            re.compile(r"\d"),        # 숫자
+            re.compile(r"[^a-zA-Z0-9]")  # 특수문자
+        ]
+
+        valid_pattern_count = sum(bool(pattern.search(v)) for pattern in patterns)
+
+        if valid_pattern_count < 2:
+            raise ValueError('비밀번호는 문자, 숫자, 특수문자 중 2개 이상을 포함해야 합니다.')
+
+        return v
 
     @validator('phone_number', allow_reuse=True)
     def validate_phone_number(cls, v):
