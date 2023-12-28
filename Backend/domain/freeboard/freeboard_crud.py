@@ -18,7 +18,7 @@ def get_freeboard_posts_by_user(db: Session, user_id: str):
 
 
 def get_all_freeboard_posts(db: Session):
-    return db.query(FreeBoard, User.user_name).join(User, FreeBoard.user_id == User.user_id).order_by(FreeBoard.post_id).all()
+    return db.query(FreeBoard, User.user_name).join(User, FreeBoard.user_id == User.user_id).order_by(FreeBoard.post_id.desc()).all()
 
 
 def get_freeboard_post_by_id(db: Session, post_id: int):
