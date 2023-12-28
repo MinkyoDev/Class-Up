@@ -39,6 +39,7 @@ const Navbar = () => {
         <li><Link to="/assignment">코테 챌린지</Link></li>
         <li><Link to="/project">프로젝트</Link></li>
         <li><Link to="/calendar">캘린더</Link></li>
+        <li><Link to="/admin">관리자</Link></li>
       </ul>
     </nav>
   );

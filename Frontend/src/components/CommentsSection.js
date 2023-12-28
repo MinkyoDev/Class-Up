@@ -78,7 +78,7 @@ const CommentsSection = ({ postId }) => {
           value={newComment}
           onChange={handleCommentChange}
         />
-        <MDBBtn type='submit' style={{ width: '80px' }}>등록</MDBBtn> {/* 버튼 너비 고정 */}
+        <MDBBtn className='ms-2 float-end' type='submit' style={{ width: '80px' }}>등록</MDBBtn> {/* 버튼 너비 고정 */}
       </form>
     </div>
   );

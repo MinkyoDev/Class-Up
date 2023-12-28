@@ -4,6 +4,7 @@ Backend/secrets.json
 
 # Data
 Backend/static/profile_image/user_image/
+Backend/static/freeboard/
 
 # Etc
 __pycache__/

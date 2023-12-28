@@ -16,6 +16,8 @@ import UserUpdate from './pages/UserUpdate';
 import CreatePost from './pages/CreatePost';
 import FreeBoardView from './pages/FreeBoardView';
 import UserView from './pages/UserView';
+import UpdatePost from './pages/UpdatePost';
+import Admin from './pages/Admin';
 import UserList from './components/UserList';
 import AttendanceList from './components/AttendanceList';
 import PrivateRoute from './components/PrivateRoute';
@@ -40,8 +42,10 @@ function App() {
           <Route path="/userupdate" element={<PrivateRoute><UserUpdate /></PrivateRoute>} />
           <Route path="/freeboard" element={<PrivateRoute><FreeBoard /></PrivateRoute>} />
           <Route path="/createpost" element={<PrivateRoute><CreatePost /></PrivateRoute>} />
+          <Route path="/updatepost/:postId" element={<PrivateRoute><UpdatePost /></PrivateRoute>} />
           <Route path="/freeboard/:postId" element={<PrivateRoute><FreeBoardView /></PrivateRoute>} />
           <Route path="/userlist" element={<PrivateRoute><UserView /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
         </Routes>
       </Router>
     </UserProvider>
