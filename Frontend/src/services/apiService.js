@@ -368,6 +368,53 @@ export const createFreeboardPost = async (postData) => {
   }
 };
 
+// 게시글 업데이트 API
+export const updateFreeboardPost = async (postId, postData) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.put(`/api/freeboard/update_freeboard/${postId}`, postData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating freeboard post:', error);
+    throw error;
+  }
+};
+
+// 게시글 삭제 API
+export const deleteFreeboardPost = async (postId) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    await axiosInstance.delete(`/api/freeboard/delete_freeboard/${postId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    throw error;
+  }
+};
+
 // 이미지 업로드 API
 export const uploadImage = async (imageFile) => {
   try {
@@ -546,3 +593,30 @@ export const addComment = async (commentData) => {
     throw error;
   }
 };
+
+// 관리자가 사용자의 출석을 처리하는 API
+export const adminCheckAttendance = async (userId) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await axiosInstance.get('/api/admin/attendance_for_admin', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      params: { 
+        user_id: userId 
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error checking attendance:', error);
+    throw error;
+  }
+};
+
