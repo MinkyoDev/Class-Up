@@ -32,8 +32,10 @@ def backup_database():
     backup_file_path = Path("backup/db") / backup_file_name
     backup_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # command = f'\"{const.MYSQLDUMP}/mysqldump\" -u {db_user} -p{db_password} {db_name} > {backup_file_path}'
-    command = f'\"{MYSQLDUMP}/mysqldump\" --defaults-file=./mysql/my.cnf -u username database_name > {backup_file_path}'
+    # command = f'\"{MYSQLDUMP}/mysqldump\" -h 221.163.19.218 -P 7780 -u {db_user} -p{db_password} {db_name} > {backup_file_path}'
+    # command = f'\"{MYSQLDUMP}/mysqldump\" --defaults-file=./mysql/my.cnf -u username database_name > {backup_file_path}'
+    command = f'\"{MYSQLDUMP}/mysqldump\" --defaults-file=./mysql/my.cnf {db_name} > {backup_file_path}'
+
     process = subprocess.Popen(command, shell=True)
     stdout, stderr = process.communicate()
 
