@@ -38,12 +38,20 @@ const TodayAttendanceList = () => {
         return <MDBBadge color='warning' pill>지각</MDBBadge>;
       case 'absent':
         return <MDBBadge color='danger' pill>결석</MDBBadge>;
-      default:
+      case 'off':
+        return <MDBBadge color='secondary' pill>휴무</MDBBadge>;
+        default:
         return <MDBBadge pill>미정</MDBBadge>;
     }
   };
 
   function formatDateTime(dateTimeStr) {
+
+    if (!dateTimeStr) {
+      // dateTimeStr 값이 null이거나 undefined일 경우 빈 문자열 반환
+      return '';
+    }
+    
     const date = new Date(dateTimeStr);
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.

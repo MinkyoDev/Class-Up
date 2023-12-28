@@ -42,6 +42,18 @@ const ScheduleCreateModal = ({selectedDate, isOpen, onClose}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 제목이 비어있는 경우 alert 창을 띄우고 함수 실행 중단
+    if (!scheduleData.title.trim()) {
+        alert('제목을 입력해주세요.');
+        return;
+    }
+
+    if (!scheduleData.content.trim()) {
+        alert('제목을 입력해주세요.');
+        return;
+    }
+
     try {
       await createSchedule(scheduleData);
       onClose();

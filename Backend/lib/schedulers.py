@@ -5,14 +5,21 @@ from pathlib import Path
 import subprocess
 import holidays
 import os
+import platform
 
 from database import get_db 
 from models import Attendance, User, UserSchedules
 import lib.const as const
 from database import SessionLocal
 
-load_dotenv()
+if platform.system() == "Linux":
+    MYSQLDUMP = const.MYSQLDUMP_LINUX
+elif platform.system() == "Windows":
+    MYSQLDUMP = const.MYSQLDUMP_WINDOWS
+else:
+    raise Exception("Unsupported operating system")
 
+load_dotenv()
 db_user = os.getenv('MYSQL_USER')
 db_password = os.getenv('MYSQL_PASSWORD')
 db_name = os.getenv('MYSQL_DATABASE')
@@ -25,8 +32,8 @@ def backup_database():
     backup_file_path = Path("backup/db") / backup_file_name
     backup_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    command = f'\"{const.MYSQLDUMP}/mysqldump\" -u {db_user} -p{db_password} {db_name} > {backup_file_path}'
-
+    # command = f'\"{const.MYSQLDUMP}/mysqldump\" -u {db_user} -p{db_password} {db_name} > {backup_file_path}'
+    command = f'\"{MYSQLDUMP}/mysqldump\" --defaults-file=./mysql/my.cnf -u username database_name > {backup_file_path}'
     process = subprocess.Popen(command, shell=True)
     stdout, stderr = process.communicate()
 

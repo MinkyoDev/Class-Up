@@ -140,7 +140,7 @@ def calculate_all_users_attendance_stats(db: Session):
     users = db.query(User).all()
     for user in users:
         stats = calculate_attendance_stats(db, user.user_id)
-        users_stats.append({**stats, "user_id": user.user_id})
+        users_stats.append({**stats, "user_id": user.user_id, "user_name": user.user_name})
 
     sorted_stats = sorted(users_stats, key=lambda x: x['total_fine'], reverse=True)
     return sorted_stats

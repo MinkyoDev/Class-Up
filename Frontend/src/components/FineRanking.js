@@ -30,10 +30,11 @@ const FineRanking = () => {
       <MDBTableHead>
         <tr>
           <th>순위</th>
-          <th>사용자 ID</th>
+          <th>이름</th>
           <th>출석 횟수</th>
           <th>지각 횟수</th>
           <th>결석 횟수</th>
+          <th>휴무 횟수</th>
           <th>총 벌금</th>
         </tr>
       </MDBTableHead>
@@ -47,10 +48,11 @@ const FineRanking = () => {
                 index + 1
               )}
             </td>
-            <td style={{ verticalAlign: 'middle' }}>{item.user_id}</td>
+            <td style={{ verticalAlign: 'middle' }}>{item.user_name}</td>
             <td style={{ verticalAlign: 'middle' }}>{item.attendance_count}</td>
             <td style={{ verticalAlign: 'middle' }}>{item.late_count}</td>
             <td style={{ verticalAlign: 'middle' }}>{item.absent_count}</td>
+            <td style={{ verticalAlign: 'middle' }}>{item.off_count}</td>
             <td style={{ verticalAlign: 'middle' }}>{item.total_fine}</td>
           </tr>
         ))}

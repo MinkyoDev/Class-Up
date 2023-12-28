@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAllFreeboardPosts } from '../services/apiService';
-import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBPagination, MDBPaginationItem, MDBPaginationLink } from 'mdb-react-ui-kit';
 import { useNavigate } from 'react-router-dom';
 
 const PostList = ({ onSelectPost }) => {
@@ -15,10 +15,6 @@ const PostList = ({ onSelectPost }) => {
     getAllPosts();
   }, []);
 
-  const handlePostClick = (postId) => {
-    navigate(`/freeboard/${postId}`); // 게시글 상세 페이지로 이동
-  };
-
   function formatDateTime(dateTimeStr) {
     const date = new Date(dateTimeStr);
     const year = date.getFullYear();
@@ -30,6 +26,26 @@ const PostList = ({ onSelectPost }) => {
   
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
+
+  // 페이징 관련 코드
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const renderPagination = pageNumbers.map(number => (
+    <MDBPaginationItem key={number} active={number === currentPage}>
+      <MDBPaginationLink onClick={() => setCurrentPage(number)} href="#">
+        {number}
+      </MDBPaginationLink>
+    </MDBPaginationItem>
+  ));
 
   return (
     <div>
@@ -43,7 +59,7 @@ const PostList = ({ onSelectPost }) => {
         </tr>
       </MDBTableHead>
       <MDBTableBody>
-        {posts.map((post) => (
+        {currentPosts.map((post) => (
           <tr key={post.post_id}>
             <td>{post.post_id}</td>
             <td onClick={() => onSelectPost(post.post_id)}>
@@ -55,6 +71,19 @@ const PostList = ({ onSelectPost }) => {
         ))}
       </MDBTableBody>
     </MDBTable>
+    <MDBPagination className='mb-0'>
+        <MDBPaginationItem disabled={currentPage === 1}>
+          <MDBPaginationLink onClick={() => setCurrentPage(currentPage - 1)} href="#">
+            이전
+          </MDBPaginationLink>
+        </MDBPaginationItem>
+        {renderPagination}
+        <MDBPaginationItem disabled={currentPage === pageNumbers.length}>
+          <MDBPaginationLink onClick={() => setCurrentPage(currentPage + 1)} href="#">
+            다음
+          </MDBPaginationLink>
+        </MDBPaginationItem>
+      </MDBPagination>
     </div>
   );
 };
