@@ -55,7 +55,6 @@ class FreeBoard(Base):
     user_id = Column(String(255), ForeignKey('user.user_id'), nullable=False)
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
-    image_url = Column(String(255), unique=False, nullable=True)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
 

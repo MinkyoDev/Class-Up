@@ -7,14 +7,11 @@ import holidays
 import os
 import platform
 
-from database import get_db 
 from models import Attendance, User, UserSchedules
 import lib.const as const
 from database import SessionLocal
 
 load_dotenv()
-db_user = os.getenv('MYSQL_USER')
-db_password = os.getenv('MYSQL_PASSWORD')
 db_name = os.getenv('MYSQL_DATABASE')
 
 
@@ -33,13 +30,14 @@ def backup_database():
     if platform.system() == "Linux":
         command = f'mysqldump --defaults-file={cnf_file} {db_name} > {backup_file_path}'
     elif platform.system() == "Windows":
-        command = f'"{const.MYSQLDUMP_WINDOWS}/mysqldump" --defaults-file={cnf_file} {db_name} > {backup_file_path}'
+        command = f'"{const.MYSQLDUMP_WINDOWS}/mysqldump" --defaults-file={cnf_file} > {backup_file_path}'
     else:
         raise Exception("Unsupported operating system")
 
-    process = subprocess.Popen(command, shell=True)
+    process = subprocess.run(command, shell=True)
     stdout, stderr = process.communicate()
 
+    print(stdout)
     if process.returncode == 0:
         print("Backup successful")
     else:
