@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
 import uvicorn
 import os
 
@@ -14,6 +15,8 @@ from domain.schedules import schedules_router
 from domain.freeboard import freeboard_router
 from domain.fb_comment import fb_comment_router
 
+load_dotenv()
+BACKEND_PORT = os.getenv('BACKEND_PORT')
 
 description = """
 **Class Up은 스터디의 출석 관리를 위한 웹페이지 입니다.**
@@ -81,7 +84,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(scheduled_task, 'cron', hour=12, minute=1)
 scheduler.start()
 
-backup_database()
+# backup_database()
 
 # Router
 app.include_router(user_router.router)
@@ -92,4 +95,4 @@ app.include_router(freeboard_router.router)
 app.include_router(fb_comment_router.router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7785)
+    uvicorn.run(app, host="0.0.0.0", port=BACKEND_PORT)
