@@ -95,4 +95,5 @@ app.include_router(freeboard_router.router)
 app.include_router(fb_comment_router.router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=BACKEND_PORT)
+    uvicorn.run(app, host="0.0.0.0", port=7783)
+
