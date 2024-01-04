@@ -4,7 +4,7 @@ PRESENT_END = "10:00"
 LATE_END = "12:00"
 
 # attendance_crud.py
-START_DAY = 18
+START_DAY = 0
 END_DAY = 0
 
 LATE_FINE = 2000
