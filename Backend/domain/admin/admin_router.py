@@ -5,6 +5,7 @@ from datetime import date, datetime
 
 from database import get_db
 from domain.admin import admin_crud, admin_schema
+from domain.user import user_schema
 from domain.user.user_router import get_current_user
 
 from models import User
@@ -100,4 +101,21 @@ async def update_user_attendance_type_endpoint(user_id: str,
     if updated_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
+    return updated_user
+
+
+@router.put("/update_forced", 
+            description="회원 정보를 강제로 수정합니다.", 
+            response_model=user_schema.UserState, 
+            tags=["Admin"])
+async def update_user_info(user_id: str, 
+                     user_update: user_schema.UserUpdate, 
+                     db: Session = Depends(get_db),
+                     current_user: User = Depends(get_current_user)):
+    if not current_user.admin:
+        raise HTTPException(status_code=400, detail="관리자가 아닙니다.")
+
+    updated_user = admin_crud.update_user(db, user_id, user_update)
+    if updated_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     return updated_user

@@ -1,7 +1,11 @@
 from datetime import date, datetime, timedelta
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+
 from models import Attendance, User
-from domain.user.user_schema import UserCreate
+from domain.user.user_schema import UserCreate, UserUpdate
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def caculate_attendance_time(start, end):
@@ -118,3 +122,23 @@ def update_user_attendance_type(db: Session, user_id: str, new_attendance_type: 
     db.commit()
     db.refresh(user)
     return user
+
+
+def update_user(db: Session, user_id: str, user_update: UserUpdate):
+    db_user = db.query(User).filter(User.user_id == user_id).first()
+    if db_user is None:
+        return None
+    
+    if user_update.user_name is not None:
+        db_user.user_name = user_update.user_name
+    if user_update.email is not None:
+        db_user.email = user_update.email
+    if user_update.phone_number is not None:
+        db_user.phone_number = user_update.phone_number
+
+    if user_update.new_password is not None:
+        db_user.password = pwd_context.hash(user_update.new_password)
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user

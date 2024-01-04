@@ -34,10 +34,9 @@ def backup_database():
     else:
         raise Exception("Unsupported operating system")
 
-    process = subprocess.run(command, shell=True)
+    process = subprocess.Popen(command, shell=True)
     stdout, stderr = process.communicate()
 
-    print(stdout)
     if process.returncode == 0:
         print("Backup successful")
     else:

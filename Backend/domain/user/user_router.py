@@ -14,6 +14,7 @@ from domain.user import user_crud, user_schema
 from domain.user.user_crud import pwd_context
 
 from models import User
+from lib.S3 import save_file_in_S3
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 SECRET_KEY = "4ab2fce7a6bd79e1c014396315ed322dd6edb1c5d975c6b74a2904135172c03c"
@@ -205,13 +206,12 @@ async def change_profile_image(file: UploadFile = File(...),
         raise HTTPException(status_code=400, detail="Invalid image")
 
     file_name = f"{uuid4()}{Path(file.filename).suffix}"
-    file_path = Path("static/profile_image/user_image") / file_name
+    object_name = f'profile_image/user_image/{file_name}'
+    file_path = save_file_in_S3(file.file, object_name)
 
-    file_path.parent.mkdir(parents=True, exist_ok=True)
+    if file_path is None:
+        raise HTTPException(status_code=500, detail="Error uploading file to S3")
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    user_crud.update_user_profile_image(db, current_user.user_id, file_path)
 
-    user_crud.update_user_profile_image(db, current_user.user_id, file_path.as_posix())
-
-    return {"filename": file_name}
+    return {"filename": file_path}

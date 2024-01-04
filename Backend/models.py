@@ -57,6 +57,7 @@ class FreeBoard(Base):
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
+    announcement = Column(Boolean, nullable=False, default=False)
 
     user = relationship("User", foreign_keys=[user_id])
 

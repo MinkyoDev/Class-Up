@@ -11,6 +11,7 @@ from database import get_db
 
 from domain.user.user_router import get_current_user
 from models import User
+from lib.S3 import save_file_in_S3
 
 router = APIRouter(
     prefix="/api/freeboard",
@@ -150,11 +151,10 @@ async def upload_image(file: UploadFile = File(...),
         raise HTTPException(status_code=400, detail="Invalid image")
 
     file_name = f"{uuid4()}{Path(file.filename).suffix}"
-    file_path = Path("static/freeboard") / file_name
+    object_name = f'freeboard/{file_name}'
+    file_path = save_file_in_S3(file.file, object_name)
 
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    if file_path is None:
+        raise HTTPException(status_code=500, detail="Error uploading file to S3")
 
     return {"file_path": file_path}
