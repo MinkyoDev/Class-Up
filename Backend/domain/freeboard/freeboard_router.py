@@ -25,6 +25,8 @@ router = APIRouter(
 async def create_freeboard_post(post: freeboard_schema.FreeBoardCreate, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
+    if post.announcement and not current_user.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only administrators can create announcement posts.")
     return freeboard_crud.create_freeboard_post(db=db, post=post, user_id=current_user.user_id)
 
 
@@ -40,10 +42,13 @@ async def read_freeboard_posts_by_user(user_id: str, db: Session = Depends(get_d
         "user_name": user_name, 
         "title": post.title, 
         "content": post.content, 
-        "image_url": post.image_url, 
         "created_at": post.created_at, 
-        "updated_at": post.updated_at
-    } for post, user_name in posts]
+        "updated_at": post.updated_at,
+        "announcement": post.announcement,
+        "view_count": post.view_count,
+        "likes_count": post.likes_count,
+        "comments_count": comments_count
+    } for post, user_name, comments_count in posts]
 
 
 @router.get("/read_freeboard/all", 
@@ -58,10 +63,34 @@ async def read_all_freeboard_posts(db: Session = Depends(get_db)):
         "user_name": user_name, 
         "title": post.title, 
         "content": post.content, 
-        "image_url": post.image_url, 
         "created_at": post.created_at, 
-        "updated_at": post.updated_at
-    } for post, user_name in posts]
+        "updated_at": post.updated_at,
+        "announcement": post.announcement,
+        "view_count": post.view_count,
+        "likes_count": post.likes_count,
+        "comments_count": comments_count
+    } for post, user_name, comments_count in posts]
+
+
+@router.get("/read_freeboard/announcement", 
+            description="공지사항을 조회합니다.", 
+            response_model=List[freeboard_schema.FreeBoardDisplay], 
+            tags=["Freeboard"])
+async def read_announcement_freeboard_posts(db: Session = Depends(get_db)):
+    posts = freeboard_crud.get_announcement_freeboard_posts(db=db)
+    return [{
+        "post_id": post.post_id, 
+        "user_id": post.user_id,
+        "user_name": user_name, 
+        "title": post.title, 
+        "content": post.content, 
+        "created_at": post.created_at, 
+        "updated_at": post.updated_at,
+        "announcement": post.announcement,
+        "view_count": post.view_count,
+        "likes_count": post.likes_count,
+        "comments_count": comments_count
+    } for post, user_name, comments_count in posts]
 
 
 @router.get("/read_freeboard/my_posts", 
@@ -77,10 +106,13 @@ async def read_my_freeboard_posts(db: Session = Depends(get_db),
         "user_name": user_name, 
         "title": post.title, 
         "content": post.content, 
-        "image_url": post.image_url, 
         "created_at": post.created_at, 
-        "updated_at": post.updated_at
-    } for post, user_name in posts]
+        "updated_at": post.updated_at,
+        "announcement": post.announcement,
+        "view_count": post.view_count,
+        "likes_count": post.likes_count,
+        "comments_count": comments_count
+    } for post, user_name, comments_count in posts]
 
 
 
@@ -89,31 +121,39 @@ async def read_my_freeboard_posts(db: Session = Depends(get_db),
             response_model=freeboard_schema.FreeBoardDisplay, 
             tags=["Freeboard"])
 async def read_freeboard_post(post_id: int, db: Session = Depends(get_db)):
-    post = freeboard_crud.get_freeboard_post_by_id(db=db, post_id=post_id)
-    if post is None:
+    freeboard_crud.increase_view_count(db=db, post_id=post_id)
+
+    result = freeboard_crud.get_freeboard_post_by_id(db=db, post_id=post_id)
+    if result is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    print(post.post_id)
+    post, user_name, comments_count = result
     return {
         "post_id": post.post_id, 
         "user_id": post.user_id,
-        "user_name": post.user.user_name,
+        "user_name": user_name,
         "title": post.title, 
         "content": post.content, 
-        "image_url": post.image_url, 
         "created_at": post.created_at, 
-        "updated_at": post.updated_at
+        "updated_at": post.updated_at,
+        "announcement": post.announcement,
+        "view_count": post.view_count,
+        "likes_count": post.likes_count,
+        "comments_count": comments_count
     }
 
 
 @router.put("/update_freeboard/{post_id}", 
             description="게시글의 내용을 수정합니다.", 
-            response_model=freeboard_schema.FreeBoardDisplay, 
+            response_model=freeboard_schema.FreeBoardUpdateDisplay, 
             tags=["Freeboard"])
 async def update_freeboard_post(post_id: int, 
                           post: freeboard_schema.FreeBoardCreate, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
-    db_post = freeboard_crud.get_freeboard_post_by_id(db, post_id)
+    if post.announcement and not current_user.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only administrators can create announcement posts.")
+
+    db_post = freeboard_crud.get_freeboard_post_by_id_to_update(db, post_id)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
     if db_post.user_id != current_user.user_id:
@@ -129,7 +169,7 @@ async def update_freeboard_post(post_id: int,
 async def delete_freeboard_post(post_id: int, 
                           db: Session = Depends(get_db), 
                           current_user: User = Depends(get_current_user)):
-    db_post = freeboard_crud.get_freeboard_post_by_id(db, post_id)
+    db_post = freeboard_crud.get_freeboard_post_by_id_to_update(db, post_id)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
     if db_post.user_id != current_user.user_id:
@@ -158,3 +198,16 @@ async def upload_image(file: UploadFile = File(...),
         raise HTTPException(status_code=500, detail="Error uploading file to S3")
 
     return {"file_path": file_path}
+
+
+@router.post("/freeboard/{post_id}/like", 
+             description="특정 게시글의 좋아요 수를 증가시킵니다.", 
+             status_code=status.HTTP_204_NO_CONTENT,
+             tags=["Freeboard"])
+async def increase_freeboard_likes(post_id: int, db: Session = Depends(get_db)):
+    post = freeboard_crud.get_freeboard_post_by_id(db=db, post_id=post_id)
+    if post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    
+    freeboard_crud.increase_likes_count(db=db, post_id=post_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

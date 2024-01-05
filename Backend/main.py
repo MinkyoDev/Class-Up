@@ -84,7 +84,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(scheduled_task, 'cron', hour=12, minute=1)
 scheduler.start()
 
-# backup_database()
+backup_database()
 
 # Router
 app.include_router(user_router.router)

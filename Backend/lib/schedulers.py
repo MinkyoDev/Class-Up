@@ -81,7 +81,7 @@ def process_absent_users(db: Session):
 
     # 출석 또는 'off' 상태인 유저를 제외한 나머지 유저들을 조회합니다.
     absent_users = db.query(User).filter(
-        User.user_id.notin_(attended_user_ids + off_users_ids)
+        User.user_id.notin_(attended_user_ids)
     ).all()
 
     for user in absent_users:
