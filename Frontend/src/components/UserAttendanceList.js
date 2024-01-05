@@ -26,6 +26,8 @@ const UserAttendanceList = () => {
         return <MDBBadge color='warning' pill>지각</MDBBadge>;
       case 'absent':
         return <MDBBadge color='danger' pill>결석</MDBBadge>;
+      case 'off':
+        return <MDBBadge color='secondary' pill>휴무</MDBBadge>;
       default:
         return <MDBBadge pill>미정</MDBBadge>;
     }
@@ -48,7 +50,7 @@ const UserAttendanceList = () => {
     <MDBTable align='middle'>
       <MDBTableHead>
         <tr>
-          <th scope='col'>출석 시간</th>
+          <th scope='col'>출석 일자</th>
           <th scope='col'>출석 상태</th>
         </tr>
       </MDBTableHead>
@@ -56,10 +58,10 @@ const UserAttendanceList = () => {
           {userAttendanceList.map((userAttendance, index) => (
             <tr key={index}>
               <td>
-                <p className='fw-normal mb-1'>{formatDateTime(userAttendance.time)}</p>
+                <p className='fw-normal mb-0'>{userAttendance.date}</p>
               </td>
               <td>
-                {renderAttendanceState(userAttendance.state)}
+                <h5 className='mb-0'>{renderAttendanceState(userAttendance.state)}</h5>
               </td>
             </tr>
           ))}

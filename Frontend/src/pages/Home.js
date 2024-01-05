@@ -50,7 +50,7 @@ const Home = () => {
             console.error('Attendance Check Failed:', error);
             // 서버에서 보낸 상세한 에러 메시지가 있는 경우 사용자에게 알림
             if (error.response && error.response.data && error.response.data.detail) {
-                alert('출석에 실패했습니다.', error.response.data.detail);
+                alert(error.response.data.detail);
             }
         }
     };

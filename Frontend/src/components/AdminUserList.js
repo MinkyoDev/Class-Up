@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUsers, adminCheckAttendance } from '../services/apiService';
+import { fetchUsers, adminCheckAttendance, updateEmploymentStatus, updateAttendanceType } from '../services/apiService';
 import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
 
 const serverURL = 'http://221.163.19.218:7783/'; // 서버 URL
@@ -32,7 +32,7 @@ const AdminUserList = () => {
       } else if (!user.state) {
         return { label: '휴가', color: 'secondary' };
       } else if (!user.attendance_type) {
-        return { label: '자택', color: 'info' };
+        return { label: '재택', color: 'info' };
       } else {
         return { label: '출근', color: 'primary' };
       }
@@ -47,6 +47,34 @@ const AdminUserList = () => {
       setUsers(data);
     } catch (error) {
       console.error('Error during attendance check:', error);
+      alert(error.response.data.detail);
+    }
+  };
+
+  // 사용자의 취직 상태를 업데이트하는 함수
+  const handleEmploymentUpdate = async (userId, employmentStatus) => {
+    try {
+      await updateEmploymentStatus(userId, employmentStatus);
+      alert(employmentStatus ? '취직 처리가 완료되었습니다.' : '퇴직 처리가 완료되었습니다.');
+      // 상태 변경 후 사용자 목록을 다시 불러옴
+      const data = await fetchUsers();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error updating employment status:', error);
+      alert(error.response.data.detail);
+    }
+  };
+
+  // 사용자의 재택 근무 상태를 업데이트하는 함수
+  const handleAttendanceTypeUpdate = async (userId, newAttendanceType) => {
+    try {
+      await updateAttendanceType(userId, newAttendanceType);
+      alert('재택 근무 상태가 업데이트 되었습니다.');
+      // 업데이트 후 사용자 목록을 다시 불러옴
+      const data = await fetchUsers();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error updating attendance type:', error);
       alert(error.response.data.detail);
     }
   };
@@ -67,6 +95,8 @@ const AdminUserList = () => {
       <MDBTableBody>
       {users.map((user) => {
           const { label, color } = getStatusLabelAndColor(user);
+          const employmentButtonLabel = user.employment ? '퇴직' : '취직';
+          const newEmploymentStatus = !user.employment;
           return (
           <tr key={user.user_id}>
             <td>
@@ -87,22 +117,38 @@ const AdminUserList = () => {
               </div>
             </td>
             <td>
-              <h5><MDBBadge color={color} pill>{label}</MDBBadge></h5>
+              <h5 className='mb-0'><MDBBadge color={color} pill>{label}</MDBBadge></h5>
             </td>
             <td>
             <MDBBtn 
                 type='button' 
-                className='mb-4' 
+                className='mb-0' 
                 color='success' 
                 block
                 onClick={() => handleAttendance(user.user_id)}>출석
             </MDBBtn>
             </td>
             <td>
-            <MDBBtn type='submit' className='mb-4' color='info' block>재택</MDBBtn>
+              <MDBBtn 
+                type='button' 
+                className='mb-0'
+                color={user.attendance_type ? 'secondary' : 'info'} 
+                block
+                onClick={() => handleAttendanceTypeUpdate(user.user_id, !user.attendance_type)}
+              >
+                {user.attendance_type ? '재택' : '출근'}
+              </MDBBtn>
             </td>
             <td>
-            <MDBBtn type='submit' className='mb-4' color='secondary' block>취직</MDBBtn>
+              <MDBBtn
+                type='button'
+                className='mb-0'
+                color={user.employment ? 'warning' : 'secondary'}
+                block
+                onClick={() => handleEmploymentUpdate(user.user_id, newEmploymentStatus)}
+              >
+                {employmentButtonLabel}
+              </MDBBtn>
             </td>
           </tr>
         );

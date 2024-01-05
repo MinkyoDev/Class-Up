@@ -620,3 +620,54 @@ export const adminCheckAttendance = async (userId) => {
   }
 };
 
+// 관리자가 사용자의 취직 여부를 업데이트하는 API
+export const updateEmploymentStatus = async (userId, newEmployment) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+    console.log(newEmployment);
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    // new_employment 값을 쿼리 파라미터로 전송
+    const response = await axiosInstance.put(`/api/admin/update_employment/${userId}?new_employment=${newEmployment}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating employment status:', error);
+    throw error;
+  }
+};
+
+// 사용자의 재택 근무 상태를 업데이트하는 API
+export const updateAttendanceType = async (userId, newAttendanceType) => {
+  try {
+    const storedData = localStorage.getItem('userInfo');
+    const userInfo = storedData ? JSON.parse(storedData) : null;
+    const token = userInfo ? userInfo.access_token : null;
+
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    // new_attendance_type 값을 쿼리 파라미터로 전송
+    const response = await axiosInstance.put(`/api/admin/update_attendance_type/${userId}?new_attendance_type=${newAttendanceType}`, {}, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating attendance type:', error);
+    throw error;
+  }
+};
+

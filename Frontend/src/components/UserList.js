@@ -32,7 +32,7 @@ const UserList = () => {
     } else if (!user.state) {
       return { label: '휴가', color: 'secondary' };
     } else if (!user.attendance_type) {
-      return { label: '자택', color: 'info' };
+      return { label: '재택', color: 'info' };
     } else {
       return { label: '출근', color: 'primary' };
     }
@@ -73,10 +73,10 @@ const UserList = () => {
               </div>
             </td>
             <td>
-              <h5><MDBBadge color={color} pill>{label}</MDBBadge></h5>
+              <h5 className='mb-0'><MDBBadge color={color} pill>{label}</MDBBadge></h5>
             </td>
             <td>
-              <p className='fw-normal mb-1'>{user.email}</p>
+              <p className='fw-normal mb-0'>{user.email}</p>
             </td>
             <td>
               {user.phone_number.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
