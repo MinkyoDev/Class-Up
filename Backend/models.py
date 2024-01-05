@@ -58,7 +58,8 @@ class FreeBoard(Base):
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
     announcement = Column(Boolean, nullable=False, default=False)
-
+    view_count = Column(Integer, nullable=False, default=0)
+    likes_count = Column(Integer, nullable=False, default=0)
     user = relationship("User", foreign_keys=[user_id])
 
     def __repr__(self):
