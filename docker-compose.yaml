@@ -1,30 +1,19 @@
-# docker-compose.yaml
-version: "3.8"
+version: '3.8'
 
 services:
+  backend:
+    build: ./Backend
+    ports:
+      - "8000:8000"  # 컨테이너의 8000 포트를 호스트의 8000 포트에 연결
+    volumes:
+      - ./Backend:/workspace  # 코드 변경 사항을 컨테이너에 반영
+    command: uvicorn main:app --host 0.0.0.0 --port 8000  # FastAPI 실행 명령어
 
   frontend:
-    build:
-      context: frontend/.
-      dockerfile: Dockerfile
-    container_name: my-web-frontend
-    tty: true
+    build: ./Frontend
     ports:
-      - 3000:3000
+      - "3000:3000"  # 컨테이너의 3000 포트를 호스트의 3000 포트에 연결
     volumes:
-      - ./frontend:/workspace
-      - ./assets:/assets
-    command: npm start
-
-  backend:
-    build:
-      context: backend/.
-      dockerfile: Dockerfile
-    container_name: my-web-backend
-    tty: true
-    ports:
-      - 8000:8000
-    volumes:
-      - ./backend:/workspace
-      - ./assets:/assets
-    command: uvicorn main:app --host 0.0.0.0 --reload
+      - ./Frontend:/app  # 코드 변경 사항을 컨테이너에 반영
+    stdin_open: true  # npm start가 인터랙티브 모드에서 작동할 수 있도록 설정
+    tty: true  # npm start가 인터랙티브 모드에서 작동할 수 있도록 설정

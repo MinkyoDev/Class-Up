@@ -1,23 +1,20 @@
-# Node 컨테이너 환경에서 실행한다.
+# Node.js 이미지를 기반으로 설정
 FROM node:latest
 
-# /usr/app/frontend 디렉터리를 생성한다.
-RUN mkdir -p /usr/app/frontend
+# 작업 디렉토리 설정
+WORKDIR /app
 
-# 생성한 디렉터리를 Default 디렉터리로 설정한다.
-WORKDIR /workspace
+# package.json 및 package-lock.json 파일 복사
+COPY package*.json ./
 
-# WORKDIR에 package.json 파일을 복사한다.
-COPY package.json .
+# 필요한 npm 패키지 설치
+RUN npm install --legacy-peer-deps
 
-# package.json의 패키지들을 설치한다.
-RUN npm install
+# 애플리케이션 소스 코드 복사
+COPY . .
 
-# 나머지 파일들을 WORKDIR에 복사해온다.
-COPY . .	
+# 애플리케이션을 실행할 포트 노출
+EXPOSE 3000
 
-# 서버를 실행한다.
-ENTRYPOINT [ "npm", "start" ]	
-
-# 3000번 포트를 호스트와 공유한다.
-EXPOSE 3000	
+# 애플리케이션 실행
+CMD ["npm", "start"]
