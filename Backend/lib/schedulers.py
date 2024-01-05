@@ -9,6 +9,7 @@ import platform
 
 from models import Attendance, User, UserSchedules
 import lib.const as const
+from lib.S3 import save_file_in_S3
 from database import SessionLocal
 
 load_dotenv()
@@ -30,7 +31,7 @@ def backup_database():
     if platform.system() == "Linux":
         command = f'mysqldump --defaults-file={cnf_file} {db_name} > {backup_file_path}'
     elif platform.system() == "Windows":
-        command = f'"{const.MYSQLDUMP_WINDOWS}/mysqldump" --defaults-file={cnf_file} > {backup_file_path}'
+        command = f'"{const.MYSQLDUMP_WINDOWS}/mysqldump" --defaults-file={cnf_file} {db_name} > {backup_file_path}'
     else:
         raise Exception("Unsupported operating system")
 
@@ -39,6 +40,9 @@ def backup_database():
 
     if process.returncode == 0:
         print("Backup successful")
+        object_name = f'backup/db/{backup_file_name}'
+        with open(backup_file_path, 'rb') as file:
+            save_file_in_S3(file, object_name)
     else:
         print(f"Backup failed: {stderr}")
 
@@ -61,23 +65,29 @@ def process_absent_users(db: Session):
     ).all()
     scheduled_user_ids = [user.user_id for user in scheduled_users]
 
+    # 고용 상태가 True인 유저들의 ID 목록을 가져옵니다.
+    employed_users = db.query(User.user_id).filter(User.employment == True).all()
+    employed_user_ids = [user.user_id for user in employed_users]
+
+    # 스케줄이 있거나 고용 상태가 True인 유저들의 ID 목록
+    off_users_ids = list(set(scheduled_user_ids + employed_user_ids))
+
     # 오늘 출석한 유저들의 ID 목록을 가져옵니다.
     attended_users = db.query(Attendance.user_id).filter(
-        Attendance.date >= today,
-        Attendance.state.in_(["present", "late", "absent", "off"])  # 출석 또는 지각으로 처리된 유저들
+        Attendance.date == today,
+        Attendance.state.in_(["present", "late"])
     ).all()
     attended_user_ids = [user.user_id for user in attended_users]
-    print(attended_user_ids)
-    # 스케줄이 있거나 출석한 유저를 제외한 나머지 유저들을 조회합니다.
+
+    # 출석 또는 'off' 상태인 유저를 제외한 나머지 유저들을 조회합니다.
     absent_users = db.query(User).filter(
-        User.user_id.notin_(attended_user_ids)
+        User.user_id.notin_(attended_user_ids + off_users_ids)
     ).all()
 
     for user in absent_users:
-        # 스케줄이 있는 유저들은 'off', 그 외는 'absent'로 처리합니다.
-        state = "off" if user.user_id in scheduled_user_ids else "absent"
+        # 스케줄이 있거나 고용 상태가 True인 경우 'off', 그 외는 'absent'로 처리합니다.
+        state = "off" if user.user_id in off_users_ids else "absent"
         absence = Attendance(user_id=user.user_id, 
-                             time=None, 
                              date=today, 
                              state=state)
         db.add(absence)

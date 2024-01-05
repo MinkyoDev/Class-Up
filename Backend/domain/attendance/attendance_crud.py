@@ -1,6 +1,5 @@
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, desc
 
 from datetime import date, datetime, timedelta
 import calendar
@@ -17,7 +16,7 @@ def get_all_attendance_list(db: Session):
 
 
 def get_user_attendance_list(db: Session, user_id: str):
-    return db.query(Attendance).filter(Attendance.user_id == user_id).order_by(Attendance.id).all()
+    return db.query(Attendance).filter(Attendance.user_id == user_id).order_by(desc(Attendance.id)).all()
 
 
 def get_today_user_attendance_list(db: Session, user_id: str):

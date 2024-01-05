@@ -16,7 +16,8 @@ def save_file_in_S3(file, object_name):
         s3.put_object(Bucket=BUCKET_NAME, Key=object_name, Body=file)
         file_url = f"https://{BUCKET_NAME}.s3.{REGION_NAME}.amazonaws.com/{object_name}"
         
-        print('Save fbx file in AWS S3 done')
+        print('Save file in AWS S3 done')
         return file_url
-    except:
+    except Exception as e:
+        print(f"Error uploading file to S3: {e}")
         return None
