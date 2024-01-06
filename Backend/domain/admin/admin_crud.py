@@ -142,3 +142,15 @@ def update_user(db: Session, user_id: str, user_update: UserUpdate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_user_by_id(db: Session, user_id: str):
+    return db.query(User).filter(User.user_id == user_id).first()
+
+
+def update_user_profile_image(db: Session, user_id: str, image_path: str):
+    db_user = db.query(User).filter(User.user_id == user_id).first()
+    if db_user:
+        db_user.profile_image = image_path
+        db.commit()
+        return db_user
