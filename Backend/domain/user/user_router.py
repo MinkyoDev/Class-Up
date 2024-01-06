@@ -6,7 +6,6 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from starlette import status
 from pathlib import Path
-import shutil
 from uuid import uuid4
 
 from database import get_db

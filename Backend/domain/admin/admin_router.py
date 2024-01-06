@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query, Depends, UploadFile, File, Depends
 from sqlalchemy.orm import Session
 from starlette import status
-from datetime import date, datetime
+from datetime import date
+from pathlib import Path
+from uuid import uuid4
 
 from database import get_db
 from domain.admin import admin_crud, admin_schema
@@ -11,6 +13,7 @@ from domain.user.user_router import get_current_user
 from models import User
 
 import lib.const as const
+from lib.S3 import save_file_in_S3
 
 router = APIRouter(
     prefix="/api/admin",
@@ -119,3 +122,31 @@ async def update_user_info(user_id: str,
     if updated_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
+
+
+@router.post("/change_profile_image", 
+             description="유저의 프로필 사진을 변경합니다.", 
+             tags=["Admin"])
+async def change_profile_image(user_id: str, file: UploadFile = File(...), 
+                               db: Session = Depends(get_db), 
+                               current_user: User = Depends(get_current_user)):
+    if not current_user.admin:
+        raise HTTPException(status_code=400, detail="관리자가 아닙니다.")
+    
+    user = admin_crud.get_user_by_id(db, user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid image")
+
+    file_name = f"{uuid4()}{Path(file.filename).suffix}"
+    object_name = f'profile_image/user_image/{file_name}'
+    file_path = save_file_in_S3(file.file, object_name)
+
+    if file_path is None:
+        raise HTTPException(status_code=500, detail="Error uploading file to S3")
+
+    admin_crud.update_user_profile_image(db, user_id, file_path)
+
+    return {"filename": file_path}
