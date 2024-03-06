@@ -12,11 +12,11 @@
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/MinkyoJeong1"><img src="https://avatars.githubusercontent.com/MinkyoJeong1" width="150px;" alt="">
+    <td align="center"><a href="https://github.com/MinkyoDev"><img src="https://avatars.githubusercontent.com/MinkyoDev" width="150px;" alt="">
     <td align="center"><a href="https://github.com/cykim1228"><img src="https://avatars.githubusercontent.com/cykim1228" width="150px;" alt="">
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/MinkyoJeong1"><b>정민교</b></td>
+    <td align="center"><a href="https://github.com/MinkyoDev"><b>정민교</b></td>
     <td align="center"><a href="https://github.com/cykim1228"><b>김찬영</b></td>
   </tr>
   <tr>
